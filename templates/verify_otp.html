@@ -1,0 +1,33 @@
+{% extends "base_auth.html" %}
+
+{% block auth_content %}
+<div class="auth-panel-head">
+    <h2>Verify Your Email</h2>
+    <p>Enter the one-time password sent to your email address to complete sign-in securely.</p>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="auth-alert">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<form method="POST" class="auth-form">
+    {% csrf_token %}
+
+    <div class="auth-field">
+        <label for="otp">One-Time Password</label>
+        <div class="auth-input-wrap">
+            <span class="auth-input-icon">#</span>
+            <input id="otp" type="text" name="otp" class="auth-input" placeholder="Enter the 6-digit OTP" required>
+        </div>
+    </div>
+
+    <button class="auth-button" type="submit">Verify and Continue</button>
+</form>
+
+<p class="auth-helper mt-4 mb-0">
+    Did not receive the code?
+    <a href="{% url 'login' %}">Go back and request a new OTP</a>
+</p>
+{% endblock %}

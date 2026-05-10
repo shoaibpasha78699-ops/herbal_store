@@ -1,0 +1,433 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.address-shell {
+    display: grid;
+    gap: 1.1rem;
+}
+
+.address-hero,
+.address-panel,
+.address-list-shell,
+.address-empty {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+    border-radius: 30px;
+    box-shadow: var(--shadow-sm);
+}
+
+.address-hero {
+    padding: 1.2rem 1.25rem;
+    background:
+        radial-gradient(circle at top right, rgba(207, 155, 74, 0.18), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(28, 107, 69, 0.12), transparent 28%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(244, 238, 226, 0.94));
+}
+
+.address-hero-grid,
+.address-main-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 0.9rem;
+    align-items: start;
+}
+
+.address-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.42rem 0.78rem;
+    border-radius: 999px;
+    background: rgba(28, 107, 69, 0.08);
+    color: var(--primary);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.address-title {
+    margin: 0.7rem 0 0.4rem;
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(2rem, 4vw, 3.1rem);
+    line-height: 0.98;
+    color: var(--primary-deep);
+}
+
+.address-subtitle {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.65;
+    max-width: 40rem;
+    font-size: 0.95rem;
+}
+
+.address-stat {
+    padding: 0.85rem 0.95rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+    box-shadow: var(--shadow-sm);
+}
+
+.address-stat + .address-stat {
+    margin-top: 0.9rem;
+}
+
+.address-stat strong {
+    display: block;
+    color: var(--primary-deep);
+    font-size: 1.15rem;
+    line-height: 1.1;
+}
+
+.address-stat span {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.address-panel,
+.address-list-shell {
+    padding: 1.05rem;
+}
+
+.section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 0.8rem;
+    margin-bottom: 0.95rem;
+}
+
+.section-head h2 {
+    margin: 0;
+    font-size: clamp(1.45rem, 2.4vw, 2rem);
+    font-family: "Cormorant Garamond", serif;
+    color: var(--primary-deep);
+}
+
+.section-head p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.address-alert {
+    border-radius: 16px;
+    border: 1px solid rgba(28, 107, 69, 0.14);
+    background: rgba(233, 247, 238, 0.9);
+    color: var(--primary-deep);
+    padding: 0.8rem 0.9rem;
+    margin-bottom: 1rem;
+    font-size: 0.92rem;
+}
+
+.address-form {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.address-field {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.address-field label {
+    color: var(--primary-deep);
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+.address-input,
+.address-textarea {
+    width: 100%;
+    min-height: 50px;
+    border-radius: 16px;
+    border: 1px solid rgba(31, 66, 46, 0.12);
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--text);
+    padding: 0.82rem 0.95rem;
+    box-shadow: none;
+}
+
+.address-textarea {
+    min-height: 104px;
+    resize: vertical;
+}
+
+.address-input:focus,
+.address-textarea:focus {
+    outline: none;
+    border-color: rgba(28, 107, 69, 0.3);
+    box-shadow: 0 0 0 0.22rem rgba(28, 107, 69, 0.08);
+}
+
+.address-check {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.address-submit {
+    min-height: 50px;
+    width: fit-content;
+    border: none;
+    border-radius: 16px;
+    padding: 0.82rem 1.2rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-deep));
+    color: #fff;
+    font-weight: 800;
+    box-shadow: 0 16px 30px rgba(28, 107, 69, 0.22);
+}
+
+.address-list {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.address-card {
+    padding: 0.95rem;
+    border-radius: 20px;
+    background: rgba(248, 250, 247, 0.92);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+}
+
+.address-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.65rem;
+}
+
+.address-card-head h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--primary-deep);
+}
+
+.default-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.38rem 0.68rem;
+    border-radius: 999px;
+    background: rgba(28, 107, 69, 0.12);
+    color: var(--primary);
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+.address-lines {
+    color: var(--muted);
+    line-height: 1.65;
+    font-size: 0.92rem;
+}
+
+.address-actions {
+    margin-top: 1rem;
+}
+
+.address-actions .btn {
+    min-height: 42px;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+
+.address-empty {
+    padding: 1.55rem 1.2rem;
+    text-align: center;
+}
+
+.address-empty-visual {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 0.8rem;
+    display: grid;
+    place-items: center;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(28, 107, 69, 0.12), rgba(207, 155, 74, 0.18));
+    color: var(--primary-deep);
+    font-size: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.address-empty h2 {
+    margin-bottom: 0.6rem;
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(1.7rem, 3.4vw, 2.4rem);
+    color: var(--primary-deep);
+}
+
+.address-empty p {
+    margin: 0 auto;
+    max-width: 30rem;
+    color: var(--muted);
+    line-height: 1.65;
+    font-size: 0.94rem;
+}
+
+@media (max-width: 991px) {
+    .address-hero-grid,
+    .address-main-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .address-hero,
+    .address-panel,
+    .address-list-shell,
+    .address-empty {
+        border-radius: 22px;
+        padding: 1.1rem;
+    }
+
+    .address-submit {
+        width: 100%;
+    }
+}
+</style>
+
+<div class="address-shell">
+    <section class="address-hero">
+        <div class="address-hero-grid">
+            <div>
+                <span class="address-kicker">Delivery Setup</span>
+                <h1 class="address-title">Saved Addresses Built for Faster Checkout</h1>
+                <p class="address-subtitle">
+                    Keep your shipping details organized, set a clear default address, and make future orders faster and more reliable.
+                </p>
+            </div>
+
+            <div>
+                <div class="address-stat">
+                    <strong>{{ addresses|length }}</strong>
+                    <span>Saved address{{ addresses|length|pluralize }} available in your account</span>
+                </div>
+                <div class="address-stat">
+                    <strong>{% if default_address %}1{% else %}0{% endif %}</strong>
+                    <span>{% if default_address %}A default address is ready for checkout{% else %}No default address selected yet{% endif %}</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="address-main-grid">
+        <section class="address-panel">
+            <div class="section-head">
+                <div>
+                    <h2>Add a New Address</h2>
+                    <p>Save delivery details you can reuse across future purchases.</p>
+                </div>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                <div class="address-alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" class="address-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+
+                <div class="address-field">
+                    <label for="full_name">Full Name</label>
+                    <input id="full_name" type="text" name="full_name" class="address-input" required>
+                </div>
+
+                <div class="address-field">
+                    <label for="phone">Phone Number</label>
+                    <input id="phone" type="text" name="phone" class="address-input" required>
+                </div>
+
+                <div class="address-field">
+                    <label for="address">Street Address</label>
+                    <textarea id="address" name="address" class="address-textarea" required></textarea>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="address-field">
+                            <label for="city">City</label>
+                            <input id="city" type="text" name="city" class="address-input" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="address-field">
+                            <label for="pincode">Pincode</label>
+                            <input id="pincode" type="text" name="pincode" class="address-input" required>
+                        </div>
+                    </div>
+                </div>
+
+                <label class="address-check">
+                    <input type="checkbox" name="is_default" id="is_default">
+                    <span>Set this as my default address</span>
+                </label>
+
+                <button type="submit" class="address-submit">Save Address</button>
+            </form>
+        </section>
+
+        {% if addresses %}
+        <section class="address-list-shell">
+            <div class="section-head">
+                <div>
+                    <h2>Saved Addresses</h2>
+                    <p>Choose which address should be used as your default delivery option.</p>
+                </div>
+            </div>
+
+            <div class="address-list">
+                {% for item in addresses %}
+                <article class="address-card">
+                    <div class="address-card-head">
+                        <div>
+                            <h3>{{ item.full_name }}</h3>
+                        </div>
+                        {% if item.is_default %}
+                        <span class="default-badge">Default Address</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="address-lines">
+                        <div>{{ item.phone }}</div>
+                        <div>{{ item.address }}</div>
+                        <div>{{ item.city }} - {{ item.pincode }}</div>
+                    </div>
+
+                    {% if not item.is_default %}
+                    <div class="address-actions">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="set_default">
+                            <input type="hidden" name="address_id" value="{{ item.id }}">
+                            <button type="submit" class="btn btn-outline-success">Make Default</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </article>
+                {% endfor %}
+            </div>
+        </section>
+        {% else %}
+        <section class="address-empty">
+            <div class="address-empty-visual">⌂</div>
+            <h2>No Saved Address Yet</h2>
+            <p>
+                Add your first delivery address to simplify checkout, speed up order placement, and keep your account better organized.
+            </p>
+        </section>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

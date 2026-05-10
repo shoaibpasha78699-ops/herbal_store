@@ -1,0 +1,124 @@
+{% extends "admin/base_site.html" %}
+{% load i18n log %}
+
+{% block nav-sidebar %}{% endblock %}
+{% block coltype %}colM{% endblock %}
+{% block content_title %}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+{{ media.css }}
+{% endblock %}
+
+{% block content %}
+<div id="content-main" class="admin-dashboard-shell">
+    <section class="admin-dashboard-hero">
+        <div class="admin-dashboard-copy">
+            <span class="admin-kicker">Operations Dashboard</span>
+            <h1>Admin tools with better clarity, speed, and control.</h1>
+            <p>
+                Manage catalog, users, orders, reviews, and platform settings from a dashboard that feels deliberate, organized, and ready for real operations.
+            </p>
+        </div>
+
+        <div class="admin-dashboard-stats">
+            <div class="admin-stat-card">
+                <strong>{{ app_list|length }}</strong>
+                <span>Admin sections available</span>
+            </div>
+            <div class="admin-stat-card">
+                <strong>{{ user.username }}</strong>
+                <span>Signed-in administrator</span>
+            </div>
+            <div class="admin-stat-card">
+                <strong><a href="{% url 'admin_report' %}" class="admin-stat-link">Open report center</a></strong>
+                <span>Live sales, orders, inventory, and customer summary</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="admin-dashboard-grid">
+        <section class="admin-dashboard-panel">
+            <div class="admin-section-head">
+                <div>
+                    <h2>{% translate 'Administration Areas' %}</h2>
+                    <p>{% translate 'Direct access to the models and controls that run the store.' %}</p>
+                </div>
+            </div>
+
+            <div class="admin-app-grid">
+                {% for app in app_list %}
+                <article class="admin-app-card">
+                    <div class="admin-app-card-head">
+                        <h3>
+                            {% if app.app_url %}
+                            <a href="{{ app.app_url }}">{{ app.name }}</a>
+                            {% else %}
+                            {{ app.name }}
+                            {% endif %}
+                        </h3>
+                    </div>
+
+                    <div class="admin-model-list">
+                        {% for model in app.models %}
+                        <div class="admin-model-row">
+                            <div class="admin-model-meta">
+                                {% if model.admin_url %}
+                                <a href="{{ model.admin_url }}">{{ model.name }}</a>
+                                {% else %}
+                                <span>{{ model.name }}</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="admin-model-actions">
+                                {% if model.add_url %}
+                                <a href="{{ model.add_url }}" class="admin-action-link">{% translate 'Add' %}</a>
+                                {% endif %}
+                                {% if model.admin_url %}
+                                <a href="{{ model.admin_url }}" class="admin-action-link admin-action-manage">{% translate 'Manage' %}</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </section>
+
+        <aside class="admin-dashboard-panel admin-dashboard-sidebar">
+            <div class="admin-section-head">
+                <div>
+                    <h2>{% translate 'Recent actions' %}</h2>
+                    <p>{% translate 'A clean summary of your latest admin activity.' %}</p>
+                </div>
+            </div>
+
+            {% get_admin_log 10 as admin_log for_user user %}
+            {% if not admin_log %}
+            <div class="admin-empty-note">{% translate 'No recent admin activity yet.' %}</div>
+            {% else %}
+            <div class="admin-activity-list">
+                {% for entry in admin_log %}
+                <article class="admin-activity-item">
+                    <div class="admin-activity-icon {% if entry.is_addition %}is-add{% elif entry.is_change %}is-change{% else %}is-delete{% endif %}">
+                        {% if entry.is_addition %}+{% elif entry.is_change %}~{% else %}-{% endif %}
+                    </div>
+                    <div class="admin-activity-copy">
+                        <strong>
+                            {% if entry.get_admin_url %}
+                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                            {% else %}
+                            {{ entry.object_repr }}
+                            {% endif %}
+                        </strong>
+                        <span>{{ entry.content_type|capfirst }}</span>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </aside>
+    </div>
+</div>
+{% endblock %}

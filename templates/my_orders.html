@@ -1,0 +1,686 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.orders-shell {
+    display: grid;
+    gap: 1.1rem;
+}
+
+.orders-hero,
+.orders-list-shell,
+.orders-empty {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+    border-radius: 30px;
+    box-shadow: var(--shadow-sm);
+}
+
+.orders-hero {
+    padding: 1.2rem 1.25rem;
+    background:
+        radial-gradient(circle at top right, rgba(207, 155, 74, 0.18), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(28, 107, 69, 0.12), transparent 28%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(244, 238, 226, 0.94));
+}
+
+.orders-hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 0.85rem;
+    align-items: center;
+}
+
+.orders-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.42rem 0.78rem;
+    border-radius: 999px;
+    background: rgba(28, 107, 69, 0.08);
+    color: var(--primary);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.orders-title {
+    margin: 0.7rem 0 0.4rem;
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(2rem, 4vw, 3.1rem);
+    line-height: 0.98;
+    color: var(--primary-deep);
+}
+
+.orders-subtitle {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.65;
+    max-width: 40rem;
+    font-size: 0.95rem;
+}
+
+.orders-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.orders-stat {
+    display: block;
+    padding: 0.85rem 0.95rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.orders-stat:hover {
+    transform: translateY(-2px);
+    border-color: rgba(28, 107, 69, 0.2);
+    box-shadow: 0 12px 28px rgba(31, 66, 46, 0.1);
+}
+
+.orders-stat.active {
+    border-color: rgba(28, 107, 69, 0.32);
+    background: rgba(238, 247, 241, 0.96);
+}
+
+.orders-stat:focus-visible {
+    outline: 2px solid rgba(28, 107, 69, 0.45);
+    outline-offset: 3px;
+}
+
+.orders-stat strong {
+    display: block;
+    color: var(--primary-deep);
+    font-size: 1.15rem;
+    line-height: 1.1;
+}
+
+.orders-stat span {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.orders-list-shell {
+    padding: 1.05rem;
+}
+
+.orders-filter-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.orders-filter-label {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.orders-filter-clear {
+    color: var(--primary);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.orders-filter-clear:hover {
+    text-decoration: underline;
+}
+
+.orders-alert {
+    border-radius: 16px;
+    padding: 0.8rem 0.9rem;
+    margin-bottom: 1rem;
+    font-size: 0.92rem;
+}
+
+.order-card {
+    padding: 1rem;
+    border-radius: 20px;
+    background: rgba(248, 250, 247, 0.92);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+}
+
+.order-card + .order-card {
+    margin-top: 1rem;
+}
+
+.order-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.order-id {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--primary-deep);
+}
+
+.order-date {
+    color: var(--muted);
+    font-size: 0.86rem;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.44rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 800;
+}
+
+.status-pending {
+    background: rgba(255, 193, 7, 0.18);
+    color: #8d6800;
+}
+
+.status-paid {
+    background: rgba(13, 110, 253, 0.12);
+    color: #0a58ca;
+}
+
+.status-shipped {
+    background: rgba(253, 126, 20, 0.16);
+    color: #b45700;
+}
+
+.status-out-for-delivery {
+    background: rgba(13, 202, 240, 0.15);
+    color: #087990;
+}
+
+.status-delivered {
+    background: rgba(25, 135, 84, 0.14);
+    color: #146c43;
+}
+
+.status-cancelled {
+    background: rgba(220, 53, 69, 0.12);
+    color: #b02a37;
+}
+
+.order-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.85rem;
+}
+
+.order-summary-item {
+    padding: 0.8rem 0.9rem;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid rgba(31, 66, 46, 0.08);
+}
+
+.order-summary-item strong {
+    display: block;
+    margin-bottom: 0.2rem;
+    color: var(--primary-deep);
+}
+
+.order-summary-item span {
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.products-list {
+    display: grid;
+    gap: 0.7rem;
+    margin-top: 0.85rem;
+}
+
+.product-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 0.9rem;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid rgba(31, 66, 46, 0.08);
+}
+
+.product-line strong {
+    color: var(--primary-deep);
+}
+
+.product-line span {
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.tracking-shell {
+    margin-top: 0.85rem;
+    padding: 0.85rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+}
+
+.tracking-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.65rem;
+}
+
+.tracking-head strong {
+    color: var(--primary-deep);
+}
+
+.tracking-update {
+    margin-top: 0.75rem;
+    padding: 0.8rem 0.9rem;
+    border-radius: 16px;
+    background: rgba(248, 250, 247, 0.96);
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.tracking-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.tracking-meta-item {
+    padding: 0.8rem 0.9rem;
+    border-radius: 16px;
+    background: rgba(248, 250, 247, 0.96);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+}
+
+.tracking-meta-item strong {
+    display: block;
+    margin-bottom: 0.2rem;
+    color: var(--primary-deep);
+}
+
+.tracking-meta-item span {
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.timeline-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.65rem;
+    margin-top: 0.85rem;
+}
+
+.timeline-card {
+    padding: 0.78rem;
+    border-radius: 16px;
+    border: 1px solid rgba(31, 66, 46, 0.08);
+    background: rgba(248, 250, 247, 0.96);
+}
+
+.timeline-card.completed {
+    border-color: rgba(25, 135, 84, 0.22);
+    background: rgba(25, 135, 84, 0.08);
+}
+
+.timeline-card strong {
+    display: block;
+    color: var(--primary-deep);
+    font-size: 0.88rem;
+}
+
+.timeline-card span {
+    color: var(--muted);
+    font-size: 0.82rem;
+    display: block;
+    margin-top: 0.3rem;
+}
+
+.cancel-box {
+    margin-top: 0.85rem;
+    padding: 0.85rem;
+    border-radius: 16px;
+    background: rgba(255, 241, 240, 0.9);
+    border: 1px solid rgba(187, 67, 61, 0.14);
+    color: #8f3e39;
+}
+
+.order-actions {
+    display: flex;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+    margin-top: 0.85rem;
+}
+
+.order-actions .btn {
+    min-height: 42px;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+
+.orders-empty {
+    padding: 1.55rem 1.2rem;
+    text-align: center;
+}
+
+.orders-empty-visual {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 0.8rem;
+    display: grid;
+    place-items: center;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(28, 107, 69, 0.12), rgba(207, 155, 74, 0.18));
+    color: var(--primary-deep);
+    font-size: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.orders-empty h2 {
+    margin-bottom: 0.6rem;
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(1.7rem, 3.4vw, 2.4rem);
+    color: var(--primary-deep);
+}
+
+.orders-empty p {
+    margin: 0 auto 1rem;
+    max-width: 30rem;
+    color: var(--muted);
+    line-height: 1.65;
+    font-size: 0.94rem;
+}
+
+@media (max-width: 991px) {
+    .orders-hero-grid,
+    .orders-stats,
+    .order-summary-grid,
+    .tracking-meta-grid,
+    .timeline-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .orders-hero-grid,
+    .orders-stats,
+    .order-summary-grid,
+    .tracking-meta-grid,
+    .timeline-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .product-line {
+        flex-direction: column;
+        align-items: start;
+    }
+}
+</style>
+
+<div class="orders-shell">
+    {% if has_orders %}
+    <section class="orders-hero">
+        <div class="orders-hero-grid">
+            <div>
+                <span class="orders-kicker">Order Management</span>
+                <h1 class="orders-title">Track Every Order with More Confidence</h1>
+                <p class="orders-subtitle">
+                    Review purchase history, monitor delivery progress, open detailed order views, and manage cancellations from a cleaner dashboard.
+                </p>
+            </div>
+
+            <div class="orders-stats">
+                <a href="{% url 'my_orders' %}" class="orders-stat {% if current_filter == 'all' %}active{% endif %}">
+                    <strong>{{ total_orders }}</strong>
+                    <span>Total order{{ total_orders|pluralize }}</span>
+                </a>
+                <a href="{% url 'my_orders' %}?filter=active" class="orders-stat {% if current_filter == 'active' %}active{% endif %}">
+                    <strong>{{ active_orders }}</strong>
+                    <span>Active order{{ active_orders|pluralize }}</span>
+                </a>
+                <a href="{% url 'my_orders' %}?filter=delivered" class="orders-stat {% if current_filter == 'delivered' %}active{% endif %}">
+                    <strong>{{ delivered_orders }}</strong>
+                    <span>Delivered order{{ delivered_orders|pluralize }}</span>
+                </a>
+                <a href="{% url 'my_orders' %}?filter=cancelled" class="orders-stat {% if current_filter == 'cancelled' %}active{% endif %}">
+                    <strong>{{ cancelled_orders }}</strong>
+                    <span>Cancelled order{{ cancelled_orders|pluralize }}</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="orders-list-shell">
+        <div class="orders-filter-head">
+            <p class="orders-filter-label">
+                {% if current_filter == "active" %}
+                Showing active orders only.
+                {% elif current_filter == "delivered" %}
+                Showing delivered orders only.
+                {% elif current_filter == "cancelled" %}
+                Showing cancelled orders only.
+                {% else %}
+                Showing all orders.
+                {% endif %}
+            </p>
+            {% if current_filter != "all" %}
+            <a href="{% url 'my_orders' %}" class="orders-filter-clear">Show all orders</a>
+            {% endif %}
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="orders-alert alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        {% for order in orders %}
+        <article class="order-card">
+            <div class="order-top">
+                <div>
+                    <h2 class="order-id">Order #{{ order.id }}</h2>
+                    <div class="order-date">{{ order.ordered_at|default:order.created_at|date:"M d, Y - h:i A" }}</div>
+                </div>
+                <div>
+                    <span class="status-badge {{ order.badge_class }}">{{ order.tracking_status }}</span>
+                </div>
+            </div>
+
+            <div class="order-summary-grid">
+                <div class="order-summary-item">
+                    <strong>{{ order.full_name }}</strong>
+                    <span>Customer name</span>
+                </div>
+                <div class="order-summary-item">
+                    <strong>{{ order.city }}</strong>
+                    <span>Delivery city</span>
+                </div>
+                <div class="order-summary-item">
+                    <strong>₹{{ order.total_amount }}</strong>
+                    <span>Order total</span>
+                </div>
+                <div class="order-summary-item">
+                    <strong>{{ order.delivery_display }}</strong>
+                    <span>Estimated delivery date and time</span>
+                </div>
+            </div>
+
+            <div class="products-list">
+                {% for item in order.items.all %}
+                <div class="product-line">
+                    <div>
+                        <strong>{{ item.product.name }}</strong>
+                        <span>Quantity: {{ item.quantity }}</span>
+                    </div>
+                    <div>
+                        <strong>₹{{ item.price }}</strong>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="product-line">
+                    <div>
+                        <strong>No products found</strong>
+                        <span>This order does not have product lines recorded yet.</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="tracking-shell">
+                <div class="tracking-head">
+                    <strong>Tracking Progress</strong>
+                    {% if order.tracking_status == "Cancelled" %}
+                    <span class="text-danger fw-semibold">Order cancelled</span>
+                    {% else %}
+                    <span class="text-muted">{{ order.progress_value }}% complete</span>
+                    {% endif %}
+                </div>
+
+                {% if order.tracking_status == "Cancelled" %}
+                <div class="alert alert-danger mb-0">This order has been cancelled.</div>
+                {% else %}
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ order.progress_value }}%;" aria-valuenow="{{ order.progress_value }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                {% endif %}
+
+                <div class="tracking-update">
+                    <strong>Tracking update:</strong> {{ order.tracking_message }}
+                </div>
+
+                <div class="tracking-meta-grid">
+                    <div class="tracking-meta-item">
+                        <strong>Current location</strong>
+                        <span>{{ order.current_location }}</span>
+                    </div>
+                    <div class="tracking-meta-item">
+                        <strong>Estimated delivery time</strong>
+                        <span>
+                            {% if order.estimated_delivery and order.estimated_delivery_time and order.tracking_status != "Delivered" %}
+                            Expected by {{ order.estimated_delivery|date:"M d, Y" }} {{ order.estimated_delivery_time }}
+                            {% else %}
+                            {{ order.delivery_display }}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="timeline-grid">
+                    {% for step in order.timeline_steps %}
+                    <div class="timeline-card {% if step.completed %}completed{% endif %}">
+                        <strong>{{ step.label }}</strong>
+                        <span>{% if step.completed %}{{ step.timestamp }}{% else %}{{ step.timestamp }}{% endif %}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% if order.status == "Cancelled" %}
+            <div class="cancel-box">
+                <div><strong>Cancel reason:</strong> {{ order.cancel_reason }}</div>
+                <div><strong>Cancelled date:</strong> {{ order.cancelled_at|date:"M d, Y - h:i A" }}</div>
+                {% if order.cancel_comment %}
+                <div><strong>Additional comments:</strong> {{ order.cancel_comment }}</div>
+                {% endif %}
+                {% if order.refund_status != "None" %}
+                <div><strong>Refund status:</strong> {{ order.refund_status }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="order-actions">
+                <a href="{% url 'order_detail' order.id %}" class="btn btn-outline-dark">View Order Details</a>
+                {% if order.can_cancel %}
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelOrderModal{{ order.id }}">
+                    Cancel Order
+                </button>
+                {% endif %}
+            </div>
+        </article>
+
+        {% if order.can_cancel %}
+        <div class="modal fade" id="cancelOrderModal{{ order.id }}" tabindex="-1" aria-labelledby="cancelOrderModalLabel{{ order.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="POST" action="{% url 'cancel_order' order.id %}">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="cancelOrderModalLabel{{ order.id }}">Cancel Order #{{ order.id }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Select Reason</label>
+                                <select name="reason" class="form-select" required>
+                                    <option value="">Select Reason</option>
+                                    <option value="Ordered by mistake">Ordered by mistake</option>
+                                    <option value="Found cheaper elsewhere">Found cheaper elsewhere</option>
+                                    <option value="Delivery too slow">Delivery too slow</option>
+                                    <option value="Changed my mind">Changed my mind</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">Additional comments</label>
+                                <textarea name="comment" class="form-control" rows="3" placeholder="Optional comments"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger">Confirm Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% empty %}
+        <div class="orders-empty">
+            <div class="orders-empty-visual">□</div>
+            <h2>No Matching Orders</h2>
+            <p>
+                There are no orders in this section right now. Choose another filter to view your other orders.
+            </p>
+            <a href="{% url 'my_orders' %}" class="btn pill-btn pill-btn-primary text-decoration-none px-4">Show All Orders</a>
+        </div>
+        {% endfor %}
+    </section>
+    {% else %}
+    <section class="orders-empty">
+        <div class="orders-empty-visual">▣</div>
+        <h2>No Orders Yet</h2>
+        <p>
+            Once you place an order, you will be able to review delivery progress, payment status, and product details from this dashboard.
+        </p>
+        <a href="{% url 'home' %}" class="btn pill-btn pill-btn-primary text-decoration-none px-4">Start Shopping</a>
+    </section>
+    {% endif %}
+</div>
+{% if enable_auto_refresh %}
+<script>
+setInterval(function () {
+    location.reload();
+}, 10000);
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.order-detail-shell {
+    display: grid;
+    gap: 1.1rem;
+}
+
+.order-detail-hero,
+.order-detail-panel {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+    border-radius: 30px;
+    box-shadow: var(--shadow-sm);
+}
+
+.order-detail-hero {
+    padding: 1.2rem 1.25rem;
+    background:
+        radial-gradient(circle at top right, rgba(207, 155, 74, 0.18), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(28, 107, 69, 0.12), transparent 28%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(244, 238, 226, 0.94));
+}
+
+.order-detail-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.42rem 0.78rem;
+    border-radius: 999px;
+    background: rgba(28, 107, 69, 0.08);
+    color: var(--primary);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.order-detail-title {
+    margin: 0.7rem 0 0.4rem;
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 0.98;
+    color: var(--primary-deep);
+}
+
+.order-detail-subtitle {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.65;
+    font-size: 0.95rem;
+}
+
+.detail-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.85rem;
+}
+
+.detail-stat {
+    padding: 0.85rem 0.95rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+    box-shadow: var(--shadow-sm);
+}
+
+.detail-stat strong {
+    display: block;
+    color: var(--primary-deep);
+    font-size: 1.15rem;
+}
+
+.detail-stat span {
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.order-detail-panel {
+    padding: 1.05rem;
+}
+
+.detail-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.85rem;
+}
+
+.detail-head h2 {
+    margin: 0;
+    font-size: clamp(1.45rem, 2.4vw, 2rem);
+    font-family: "Cormorant Garamond", serif;
+    color: var(--primary-deep);
+}
+
+.detail-head p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.detail-items {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.detail-item {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr) auto;
+    gap: 0.85rem;
+    align-items: center;
+    padding: 0.85rem;
+    border-radius: 18px;
+    background: rgba(248, 250, 247, 0.92);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+}
+
+.detail-item-media {
+    overflow: hidden;
+    border-radius: 14px;
+    aspect-ratio: 1 / 1;
+    background: linear-gradient(180deg, #edf4ee, #f4eadb);
+}
+
+.detail-item-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.detail-item-info h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--primary-deep);
+}
+
+.detail-item-info p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.55;
+    font-size: 0.9rem;
+}
+
+.detail-item-total {
+    text-align: right;
+}
+
+.detail-item-total strong {
+    display: block;
+    color: var(--primary-deep);
+    font-size: 1rem;
+}
+
+.detail-item-total span {
+    color: var(--muted);
+    font-size: 0.84rem;
+}
+
+.detail-actions {
+    margin-top: 0.85rem;
+}
+
+.detail-actions .btn {
+    min-height: 42px;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 991px) {
+    .detail-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .detail-item {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-item-media {
+        max-width: 160px;
+    }
+
+    .detail-item-total {
+        text-align: left;
+    }
+}
+</style>
+
+<div class="order-detail-shell">
+    <section class="order-detail-hero">
+        <span class="order-detail-kicker">Order Detail View</span>
+        <h1 class="order-detail-title">Order #{{ order.id }}</h1>
+        <p class="order-detail-subtitle">Review the products, totals, and timeline details connected to this order.</p>
+
+        <div class="detail-stats">
+            <div class="detail-stat">
+                <strong>{{ order.created_at|date:"M d, Y" }}</strong>
+                <span>Order date</span>
+            </div>
+            <div class="detail-stat">
+                <strong>₹{{ order.total_amount }}</strong>
+                <span>Total amount</span>
+            </div>
+            <div class="detail-stat">
+                <strong>{{ order.items.count }}</strong>
+                <span>Item{{ order.items.count|pluralize }} in this order</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="order-detail-panel">
+        <div class="detail-head">
+            <div>
+                <h2>Items in This Order</h2>
+                <p>A complete breakdown of every product included in the order.</p>
+            </div>
+        </div>
+
+        <div class="detail-items">
+            {% for item in order.items.all %}
+            <article class="detail-item">
+                <div class="detail-item-media">
+                    {% if item.product.image %}
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                    {% else %}
+                    <img src="https://via.placeholder.com/320x320?text=Herbal+Product" alt="{{ item.product.name }}">
+                    {% endif %}
+                </div>
+
+                <div class="detail-item-info">
+                    <h3>{{ item.product.name }}</h3>
+                    <p>Quantity: {{ item.quantity }}</p>
+                    <p>Unit price: ₹{{ item.price }}</p>
+                </div>
+
+                <div class="detail-item-total">
+                    <span>Line total</span>
+                    <strong>₹{{ item.total }}</strong>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <div class="detail-actions">
+            <a href="{% url 'my_orders' %}" class="btn btn-outline-dark">Back to My Orders</a>
+        </div>
+    </section>
+</div>
+{% endblock %}

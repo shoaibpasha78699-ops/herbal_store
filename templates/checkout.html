@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+<div class="row">
+
+<!-- LEFT -->
+<div class="col-md-7">
+<div class="card shadow p-4">
+<h4 class="mb-4 text-success">Shipping Details</h4>
+
+{% if has_default_address %}
+<div class="alert alert-success">
+    Default address loaded for checkout.
+</div>
+{% else %}
+<div class="alert alert-warning">
+    No default address found. Please add one from <a href="{% url 'my_address' %}" class="alert-link">Saved Addresses</a>.
+</div>
+{% endif %}
+
+<form id="order-form">
+{% csrf_token %}
+
+<input type="text" id="name" class="form-control mb-3" placeholder="Full Name" value="{% if default_address %}{{ default_address.full_name }}{% endif %}" required>
+
+<textarea id="address" class="form-control mb-3" placeholder="Address" required>{% if default_address %}{{ default_address.address }}{% endif %}</textarea>
+
+<div class="row">
+<div class="col-md-6">
+<input type="text" id="city" class="form-control mb-3" placeholder="City" value="{% if default_address %}{{ default_address.city }}{% endif %}" required>
+</div>
+
+<div class="col-md-6">
+<input type="text" id="pincode" class="form-control mb-3" placeholder="Pincode" value="{% if default_address %}{{ default_address.pincode }}{% endif %}" required>
+</div>
+</div>
+
+</form>
+</div>
+</div>
+
+<!-- RIGHT -->
+<div class="col-md-5">
+<div class="card shadow p-4">
+
+<h4 class="text-success">Total: ₹{{ total }}</h4>
+
+<button id="pay-btn" class="btn btn-success w-100 mt-2">
+Pay Online
+</button>
+
+<form method="POST" action="/checkout/">
+    {% csrf_token %}
+    <input type="hidden" name="payment_method" value="cod">
+    <button type="submit" class="btn btn-outline-dark w-100 mt-2">
+        Cash on Delivery
+    </button>
+</form>
+</div>
+</div>
+
+</div>
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+document.getElementById("pay-btn").onclick = function(e){
+
+    e.preventDefault();
+
+    console.log("Button Clicked");
+
+    fetch("/create-payment/")
+    .then(response => response.json())
+    .then(data => {
+
+        console.log("Payment Data:", data);
+
+        var options = {
+            "key": "{{ razorpay_key }}",
+            "amount": data.amount,
+            "currency": "INR",
+            "name": "Herbal Store",
+            "description": "Order Payment",
+            "order_id": data.id,
+
+            "handler": function (response) {
+
+                console.log("Payment Success:", response);
+
+                fetch("/verify-payment/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(response)
+                })
+                .then(res => res.json())
+                .then(data => {
+
+                    if (data.status === "success") {
+                        alert("Payment Successful");
+                        window.location.href = "/my-orders/";
+                    } else {
+                        alert("Payment Failed");
+                    }
+
+                });
+
+            },
+
+            "theme": {
+                "color": "#198754"
+            }
+        };
+
+        var rzp = new Razorpay(options);
+        rzp.open();
+    })
+    .catch(error => {
+        console.log("ERROR:", error);
+        alert("Something went wrong");
+    });
+}
+</script>
+{% endblock %}

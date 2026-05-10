@@ -1,0 +1,145 @@
+{% extends "base_auth.html" %}
+
+{% block auth_content %}
+<div class="auth-panel-head">
+    <h2>Create Your Account</h2>
+    <p>Join the store with a cleaner onboarding experience and start managing orders, addresses, and your wellness essentials in one place.</p>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="auth-alert">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<form method="POST" class="auth-form">
+    {% csrf_token %}
+
+    <div class="auth-field">
+        <label for="register-username">Username</label>
+        <div class="auth-input-wrap">
+            <span class="auth-input-icon">U</span>
+            <input id="register-username" type="text" name="username" class="auth-input" placeholder="Choose a username" required>
+        </div>
+    </div>
+
+    <div class="auth-field">
+        <label for="register-email">Email Address</label>
+        <div class="auth-input-wrap">
+            <span class="auth-input-icon">@</span>
+            <input id="register-email" type="email" name="email" class="auth-input" placeholder="Enter your email address" required>
+        </div>
+    </div>
+
+    <div class="auth-field">
+        <label for="password1">Password</label>
+        <div class="auth-input-wrap">
+            <span class="auth-input-icon">#</span>
+            <input id="password1" type="password" name="password1" class="auth-input" placeholder="Create a secure password" required>
+        </div>
+    </div>
+
+    <div class="strength-wrap">
+        <div class="strength-bar-track">
+            <div id="strengthBar" class="strength-bar-fill"></div>
+        </div>
+
+        <div id="passwordRules" class="rule-list">
+            <div id="length" class="rule-item">At least 8 characters</div>
+            <div id="number" class="rule-item">At least one number</div>
+            <div id="letter" class="rule-item">At least one letter</div>
+        </div>
+    </div>
+
+    <div class="auth-field">
+        <label for="password2">Confirm Password</label>
+        <div class="auth-input-wrap">
+            <span class="auth-input-icon">#</span>
+            <input id="password2" type="password" name="password2" class="auth-input" placeholder="Re-enter your password" required>
+        </div>
+    </div>
+
+    <div id="matchMessage" class="match-message"></div>
+
+    <button class="auth-button" type="submit">Create Account</button>
+</form>
+
+<p class="auth-switch mt-4 mb-0">
+    Already have an account?
+    <a href="{% url 'login' %}">Log in here</a>
+</p>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const passwordInput = document.getElementById("password1");
+    const confirmInput = document.getElementById("password2");
+    const strengthBar = document.getElementById("strengthBar");
+    const matchMessage = document.getElementById("matchMessage");
+    const ruleLength = document.getElementById("length");
+    const ruleNumber = document.getElementById("number");
+    const ruleLetter = document.getElementById("letter");
+
+    function setRuleState(element, isValid) {
+        element.classList.toggle("valid", isValid);
+    }
+
+    function updateStrength() {
+        const value = passwordInput.value;
+        let strength = 0;
+
+        const hasLength = value.length >= 8;
+        const hasNumber = /\d/.test(value);
+        const hasLetter = /[a-zA-Z]/.test(value);
+
+        setRuleState(ruleLength, hasLength);
+        setRuleState(ruleNumber, hasNumber);
+        setRuleState(ruleLetter, hasLetter);
+
+        if (hasLength) strength++;
+        if (hasNumber) strength++;
+        if (hasLetter) strength++;
+
+        if (strength === 1) {
+            strengthBar.style.width = "33%";
+            strengthBar.style.background = "linear-gradient(135deg, #df655c, #ef9b7a)";
+        } else if (strength === 2) {
+            strengthBar.style.width = "66%";
+            strengthBar.style.background = "linear-gradient(135deg, #d9a448, #efc470)";
+        } else if (strength === 3) {
+            strengthBar.style.width = "100%";
+            strengthBar.style.background = "linear-gradient(135deg, #1c6b45, #2b8b5b)";
+        } else {
+            strengthBar.style.width = "0%";
+            strengthBar.style.background = "linear-gradient(135deg, #df655c, #ef9b7a)";
+        }
+    }
+
+    function updateMatchMessage() {
+        const hasConfirmValue = confirmInput.value.length > 0;
+        const isMatch = confirmInput.value === passwordInput.value;
+
+        matchMessage.classList.remove("valid", "invalid");
+        matchMessage.textContent = "";
+
+        if (!hasConfirmValue) {
+            return;
+        }
+
+        if (isMatch) {
+            matchMessage.classList.add("valid");
+            matchMessage.textContent = "Passwords match";
+        } else {
+            matchMessage.classList.add("invalid");
+            matchMessage.textContent = "Passwords do not match";
+        }
+    }
+
+    passwordInput.addEventListener("input", function () {
+        updateStrength();
+        updateMatchMessage();
+    });
+
+    confirmInput.addEventListener("input", updateMatchMessage);
+});
+</script>
+{% endblock %}

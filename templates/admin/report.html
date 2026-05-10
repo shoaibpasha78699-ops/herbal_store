@@ -1,0 +1,1304 @@
+{% extends "admin/base_site.html" %}
+
+{% block nav-sidebar %}{% endblock %}
+{% block coltype %}colM{% endblock %}
+{% block content_title %}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .report-studio {
+        --studio-bg: linear-gradient(180deg, #f5f3eb 0%, #efe8d8 100%);
+        --studio-surface: rgba(255, 255, 255, 0.78);
+        --studio-surface-strong: #ffffff;
+        --studio-line: rgba(28, 53, 41, 0.08);
+        --studio-text: #173629;
+        --studio-muted: #6f7f74;
+        --studio-primary: #0f6b53;
+        --studio-primary-deep: #0a4435;
+        --studio-accent: #d89f4b;
+        --studio-accent-soft: rgba(216, 159, 75, 0.18);
+        --studio-blue: #3b82f6;
+        --studio-shadow-lg: 0 24px 60px rgba(18, 34, 24, 0.12);
+        --studio-shadow-md: 0 14px 30px rgba(18, 34, 24, 0.08);
+        --studio-shadow-sm: 0 8px 18px rgba(18, 34, 24, 0.05);
+        color: var(--studio-text);
+    }
+
+    .report-studio,
+    .report-studio * {
+        box-sizing: border-box;
+    }
+
+    .report-studio .studio-shell {
+        display: grid;
+        gap: 22px;
+    }
+
+    .report-studio .studio-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 32px;
+        border-radius: 32px;
+        background:
+            radial-gradient(circle at top right, rgba(216, 159, 75, 0.22), transparent 22%),
+            radial-gradient(circle at left bottom, rgba(15, 107, 83, 0.14), transparent 28%),
+            linear-gradient(135deg, #ffffff, #f4efe2);
+        border: 1px solid var(--studio-line);
+        box-shadow: var(--studio-shadow-lg);
+    }
+
+    .report-studio .studio-hero::after {
+        content: "";
+        position: absolute;
+        inset: auto -60px -90px auto;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(15, 107, 83, 0.16), transparent 68%);
+        pointer-events: none;
+    }
+
+    .report-studio .studio-hero-grid {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: minmax(0, 1.12fr) minmax(360px, 0.88fr);
+        gap: 24px;
+        align-items: start;
+    }
+
+    .report-studio .studio-kicker {
+        display: inline-flex;
+        align-items: center;
+        padding: 9px 14px;
+        border-radius: 999px;
+        background: rgba(23, 54, 41, 0.06);
+        color: var(--studio-primary-deep);
+        font-size: 0.74rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+    }
+
+    .report-studio .studio-title {
+        margin: 18px 0 14px;
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(3rem, 5vw, 5.3rem);
+        line-height: 0.88;
+        letter-spacing: -0.04em;
+        color: var(--studio-text);
+        max-width: 11ch;
+    }
+
+    .report-studio .studio-copy {
+        margin: 0;
+        max-width: 46rem;
+        color: var(--studio-muted);
+        font-size: 1.03rem;
+        line-height: 1.85;
+    }
+
+    .report-studio .studio-hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .report-studio .studio-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 18px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .report-studio .studio-button:hover {
+        transform: translateY(-1px);
+    }
+
+    .report-studio .studio-button-primary {
+        background: linear-gradient(135deg, var(--studio-primary), var(--studio-primary-deep));
+        color: #fff;
+        box-shadow: 0 16px 28px rgba(15, 107, 83, 0.22);
+    }
+
+    .report-studio .studio-timestamp {
+        color: var(--studio-muted);
+        font-weight: 600;
+        font-size: 0.92rem;
+    }
+
+    .report-studio .studio-command {
+        display: grid;
+        gap: 14px;
+    }
+
+    .report-studio .studio-toggle {
+        display: inline-flex;
+        width: fit-content;
+        padding: 8px;
+        gap: 8px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid var(--studio-line);
+        box-shadow: var(--studio-shadow-sm);
+    }
+
+    .report-studio .studio-toggle button {
+        min-height: 42px;
+        padding: 0 18px;
+        border: none;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--studio-muted);
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    .report-studio .studio-toggle button.is-active {
+        background: linear-gradient(135deg, var(--studio-primary), var(--studio-primary-deep));
+        color: #fff;
+        box-shadow: 0 10px 22px rgba(15, 107, 83, 0.18);
+    }
+
+    .report-studio .studio-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .report-studio .studio-kpi {
+        padding: 18px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.84);
+        border: 1px solid rgba(28, 53, 41, 0.06);
+        box-shadow: var(--studio-shadow-sm);
+    }
+
+    .report-studio .studio-kpi.is-strong {
+        background: linear-gradient(135deg, #143e31, #0f6b53);
+        color: #fff;
+    }
+
+    .report-studio .studio-kpi.is-warn {
+        background: linear-gradient(135deg, rgba(216, 159, 75, 0.24), rgba(255, 255, 255, 0.86));
+    }
+
+    .report-studio .studio-kpi-label {
+        display: block;
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 800;
+        color: inherit;
+        opacity: 0.88;
+    }
+
+    .report-studio .studio-kpi-value {
+        display: block;
+        margin-top: 10px;
+        font-size: 1.65rem;
+        font-weight: 800;
+        color: inherit;
+    }
+
+    .report-studio .studio-kpi-note {
+        display: block;
+        margin-top: 8px;
+        font-size: 0.86rem;
+        color: inherit;
+        opacity: 0.84;
+    }
+
+    .report-studio .studio-strip {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .report-studio .studio-strip-card {
+        padding: 18px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid var(--studio-line);
+        box-shadow: var(--studio-shadow-sm);
+    }
+
+    .report-studio .studio-strip-card span {
+        display: block;
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 800;
+        color: var(--studio-muted);
+    }
+
+    .report-studio .studio-strip-card strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 1.38rem;
+        color: var(--studio-text);
+    }
+
+    .report-studio .studio-strip-card small {
+        display: block;
+        margin-top: 8px;
+        color: var(--studio-muted);
+        line-height: 1.55;
+    }
+
+    .report-studio .studio-view {
+        display: grid;
+        gap: 22px;
+    }
+
+    .report-studio.report-mode-data .studio-view-charts {
+        display: none;
+    }
+
+    .report-studio:not(.report-mode-data) .studio-view-data {
+        display: none;
+    }
+
+    .report-studio .studio-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+        gap: 20px;
+        align-items: start;
+    }
+
+    .report-studio .studio-card {
+        padding: 24px;
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.86);
+        border: 1px solid var(--studio-line);
+        box-shadow: var(--studio-shadow-md);
+    }
+
+    .report-studio .studio-card-dark {
+        background:
+            radial-gradient(circle at top right, rgba(216, 159, 75, 0.12), transparent 24%),
+            linear-gradient(135deg, #173629, #214b3c);
+        color: #fff;
+    }
+
+    .report-studio .studio-card-dark .studio-card-title,
+    .report-studio .studio-card-dark .studio-card-subtitle,
+    .report-studio .studio-card-dark .studio-stat,
+    .report-studio .studio-card-dark .studio-stat-meta,
+    .report-studio .studio-card-dark .studio-list-note {
+        color: #fff;
+    }
+
+    .report-studio .studio-card-title {
+        margin: 0;
+        font-family: "Cormorant Garamond", serif;
+        font-size: 2.3rem;
+        line-height: 0.95;
+        color: var(--studio-text);
+    }
+
+    .report-studio .studio-card-subtitle {
+        margin: 8px 0 0;
+        color: var(--studio-muted);
+        font-size: 0.96rem;
+        line-height: 1.7;
+    }
+
+    .report-studio .studio-overview {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+        gap: 16px;
+        margin-top: 18px;
+    }
+
+    .report-studio .studio-spotlight {
+        padding: 20px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .report-studio .studio-spotlight-label {
+        display: inline-flex;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.73rem;
+        font-weight: 800;
+    }
+
+    .report-studio .studio-spotlight-value {
+        margin-top: 16px;
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(3rem, 4.5vw, 4.8rem);
+        line-height: 0.92;
+        letter-spacing: -0.03em;
+    }
+
+    .report-studio .studio-meter-stack {
+        display: grid;
+        gap: 14px;
+        margin-top: 18px;
+    }
+
+    .report-studio .studio-meter-row {
+        display: grid;
+        grid-template-columns: 82px 1fr auto;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .report-studio .studio-meter-row strong,
+    .report-studio .studio-meter-row span {
+        font-size: 0.88rem;
+    }
+
+    .report-studio .studio-meter {
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        overflow: hidden;
+    }
+
+    .report-studio .studio-meter-fill {
+        height: 100%;
+        border-radius: inherit;
+    }
+
+    .report-studio .fill-green { background: linear-gradient(90deg, #86efac, #22c55e); }
+    .report-studio .fill-gold { background: linear-gradient(90deg, #fbd38d, #d89f4b); }
+    .report-studio .fill-blue { background: linear-gradient(90deg, #93c5fd, #3b82f6); }
+
+    .report-studio .studio-mini-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .report-studio .studio-mini {
+        padding: 18px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .report-studio .studio-mini span {
+        display: block;
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.76);
+    }
+
+    .report-studio .studio-mini strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 1.55rem;
+        color: #fff;
+    }
+
+    .report-studio .studio-mini small {
+        display: block;
+        margin-top: 6px;
+        color: rgba(255, 255, 255, 0.72);
+    }
+
+    .report-studio .studio-chart-wrap {
+        position: relative;
+        margin-top: 18px;
+        min-height: 320px;
+    }
+
+    .report-studio canvas {
+        width: 100%;
+        height: 320px;
+        display: block;
+    }
+
+    .report-studio .studio-product-list,
+    .report-studio .studio-review-list,
+    .report-studio .studio-stack {
+        display: grid;
+        gap: 14px;
+        margin-top: 18px;
+    }
+
+    .report-studio .studio-product-card,
+    .report-studio .studio-review-card,
+    .report-studio .studio-table-card {
+        padding: 18px;
+        border-radius: 22px;
+        background: rgba(247, 249, 245, 0.95);
+        border: 1px solid var(--studio-line);
+        box-shadow: var(--studio-shadow-sm);
+    }
+
+    .report-studio .studio-product-head,
+    .report-studio .studio-review-card {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .report-studio .studio-product-head strong,
+    .report-studio .studio-review-card strong {
+        color: var(--studio-text);
+    }
+
+    .report-studio .studio-list-note,
+    .report-studio .studio-review-card span {
+        display: block;
+        margin-top: 4px;
+        color: var(--studio-muted);
+        font-size: 0.88rem;
+    }
+
+    .report-studio .studio-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 36px;
+        padding: 0 12px;
+        border-radius: 999px;
+        background: rgba(15, 107, 83, 0.08);
+        color: var(--studio-primary);
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .report-studio .studio-track {
+        margin-top: 14px;
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(23, 54, 41, 0.08);
+        overflow: hidden;
+    }
+
+    .report-studio .studio-track-fill {
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--studio-primary), var(--studio-accent));
+    }
+
+    .report-studio .studio-product-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+    }
+
+    .report-studio .studio-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: #fff;
+        border: 1px solid rgba(23, 54, 41, 0.08);
+        color: var(--studio-muted);
+        font-size: 0.84rem;
+    }
+
+    .report-studio .studio-chip strong {
+        color: var(--studio-text);
+    }
+
+    .report-studio .studio-rating {
+        width: 58px;
+        height: 58px;
+        display: grid;
+        place-items: center;
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(216, 159, 75, 0.2), rgba(15, 107, 83, 0.12));
+        color: var(--studio-text);
+        font-weight: 800;
+    }
+
+    .report-studio .studio-data-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 18px;
+    }
+
+    .report-studio .studio-data-stat {
+        padding: 18px;
+        border-radius: 22px;
+        background: rgba(247, 249, 245, 0.95);
+        border: 1px solid var(--studio-line);
+        box-shadow: var(--studio-shadow-sm);
+    }
+
+    .report-studio .studio-data-stat span {
+        display: block;
+        color: var(--studio-muted);
+        font-size: 0.86rem;
+    }
+
+    .report-studio .studio-data-stat strong {
+        display: block;
+        margin-top: 8px;
+        color: var(--studio-text);
+        font-size: 1.45rem;
+    }
+
+    .report-studio .studio-table {
+        display: grid;
+        gap: 10px;
+        margin-top: 18px;
+    }
+
+    .report-studio .studio-table-head,
+    .report-studio .studio-table-row {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        align-items: center;
+        padding: 14px 16px;
+        border-radius: 16px;
+    }
+
+    .report-studio .studio-table-head {
+        background: rgba(15, 107, 83, 0.08);
+        color: var(--studio-text);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.75rem;
+        font-weight: 800;
+    }
+
+    .report-studio .studio-table-row {
+        background: #fff;
+        border: 1px solid var(--studio-line);
+        box-shadow: var(--studio-shadow-sm);
+        color: var(--studio-text);
+        font-weight: 600;
+    }
+
+    .report-studio .studio-table-compact .studio-table-head,
+    .report-studio .studio-table-compact .studio-table-row {
+        grid-template-columns: minmax(0, 1.5fr) 0.8fr;
+    }
+
+    .report-studio .studio-chat {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 1100;
+    }
+
+    .report-studio .studio-chat-toggle {
+        width: 64px;
+        height: 64px;
+        border: none;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--studio-primary), var(--studio-primary-deep));
+        color: #fff;
+        font-weight: 800;
+        box-shadow: 0 18px 36px rgba(15, 107, 83, 0.24);
+        cursor: pointer;
+    }
+
+    .report-studio .studio-chat-window {
+        position: absolute;
+        right: 0;
+        bottom: 78px;
+        width: 360px;
+        max-width: calc(100vw - 28px);
+        display: none;
+        overflow: hidden;
+        border-radius: 26px;
+        background: rgba(255, 255, 255, 0.98);
+        border: 1px solid var(--studio-line);
+        box-shadow: 0 28px 58px rgba(18, 34, 24, 0.18);
+    }
+
+    .report-studio .studio-chat-window.is-open {
+        display: block;
+    }
+
+    .report-studio .studio-chat-header {
+        padding: 18px 18px 14px;
+        background: linear-gradient(135deg, var(--studio-primary), var(--studio-primary-deep));
+        color: #fff;
+    }
+
+    .report-studio .studio-chat-header strong {
+        display: block;
+        font-size: 1rem;
+    }
+
+    .report-studio .studio-chat-header span {
+        display: block;
+        margin-top: 4px;
+        font-size: 0.84rem;
+        opacity: 0.9;
+    }
+
+    .report-studio .studio-chat-body {
+        display: grid;
+        gap: 12px;
+        max-height: 360px;
+        overflow-y: auto;
+        padding: 16px;
+        background: #f8faf7;
+    }
+
+    .report-studio .studio-chat-bubble {
+        max-width: 88%;
+        padding: 12px 14px;
+        border-radius: 18px;
+        line-height: 1.6;
+        font-size: 0.92rem;
+        box-shadow: var(--studio-shadow-sm);
+    }
+
+    .report-studio .studio-chat-bubble.bot {
+        background: #fff;
+        color: var(--studio-text);
+        border-top-left-radius: 8px;
+    }
+
+    .report-studio .studio-chat-bubble.user {
+        margin-left: auto;
+        background: linear-gradient(135deg, var(--studio-primary), var(--studio-primary-deep));
+        color: #fff;
+        border-top-right-radius: 8px;
+    }
+
+    .report-studio .studio-chat-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .report-studio .studio-chat-actions button {
+        border: 1px solid rgba(23, 54, 41, 0.08);
+        border-radius: 999px;
+        background: #fff;
+        color: var(--studio-text);
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    .report-studio .studio-chat-footer {
+        padding: 14px;
+        border-top: 1px solid rgba(23, 54, 41, 0.08);
+        background: #fff;
+    }
+
+    .report-studio .studio-chat-form {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+    }
+
+    .report-studio .studio-chat-form input {
+        min-height: 46px;
+        border: 1px solid rgba(23, 54, 41, 0.12);
+        border-radius: 999px;
+        padding: 0 16px;
+        outline: none;
+    }
+
+    .report-studio .studio-chat-form button {
+        min-height: 46px;
+        padding: 0 16px;
+        border: none;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--studio-primary), var(--studio-primary-deep));
+        color: #fff;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    @media (max-width: 1100px) {
+        .report-studio .studio-hero-grid,
+        .report-studio .studio-overview,
+        .report-studio .studio-grid,
+        .report-studio .studio-strip,
+        .report-studio .studio-data-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .report-studio .studio-hero,
+        .report-studio .studio-card {
+            padding: 18px;
+            border-radius: 22px;
+        }
+
+        .report-studio .studio-command-grid,
+        .report-studio .studio-kpi-grid,
+        .report-studio .studio-strip,
+        .report-studio .studio-data-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .report-studio .studio-title {
+            font-size: clamp(2.5rem, 11vw, 3.7rem);
+        }
+
+        .report-studio .studio-toggle {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .report-studio .studio-toggle button {
+            width: 100%;
+        }
+
+        .report-studio .studio-meter-row,
+        .report-studio .studio-table-head,
+        .report-studio .studio-table-row,
+        .report-studio .studio-product-head,
+        .report-studio .studio-review-card {
+            grid-template-columns: 1fr;
+        }
+
+        .report-studio .studio-chat {
+            right: 12px;
+            bottom: 12px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="content-main" class="report-studio">
+    <div class="studio-shell">
+        <section class="studio-hero">
+            <div class="studio-hero-grid">
+                <div>
+                    <span class="studio-kicker">Executive reporting suite</span>
+                    <h1 class="studio-title">A sharper analytics surface for serious admin work.</h1>
+                    <p class="studio-copy">
+                        This report is built for faster decision-making. Use charts when you want immediate visual patterns, and switch to data view when you need exact numbers for operational review.
+                    </p>
+
+                    <div class="studio-hero-actions">
+                        <a href="/admin/" class="studio-button studio-button-primary">Back to admin</a>
+                        <span class="studio-timestamp">Generated on {{ report_generated_at|date:"M d, Y" }} at {{ report_generated_at|time:"H:i" }}</span>
+                    </div>
+                </div>
+
+                <div class="studio-command">
+                    <div class="studio-toggle" aria-label="Report display mode">
+                        <button type="button" class="is-active" data-mode="charts">Charts View</button>
+                        <button type="button" data-mode="data">Data View</button>
+                    </div>
+
+                    <div class="studio-kpi-grid studio-command-grid">
+                        <article class="studio-kpi is-strong">
+                            <span class="studio-kpi-label">Total revenue</span>
+                            <strong class="studio-kpi-value">Rs. {{ total_revenue|floatformat:2 }}</strong>
+                            <small class="studio-kpi-note">7 day revenue: Rs. {{ weekly_revenue|floatformat:2 }}</small>
+                        </article>
+                        <article class="studio-kpi">
+                            <span class="studio-kpi-label">Total orders</span>
+                            <strong class="studio-kpi-value">{{ total_orders }}</strong>
+                            <small class="studio-kpi-note">{{ delivered_orders }} delivered | {{ cancelled_orders }} cancelled</small>
+                        </article>
+                        <article class="studio-kpi">
+                            <span class="studio-kpi-label">Customers</span>
+                            <strong class="studio-kpi-value">{{ total_customers }}</strong>
+                            <small class="studio-kpi-note">{{ new_customers_30d }} new in the last 30 days</small>
+                        </article>
+                        <article class="studio-kpi is-warn">
+                            <span class="studio-kpi-label">Inventory watch</span>
+                            <strong class="studio-kpi-value">{{ low_stock_products }}</strong>
+                            <small class="studio-kpi-note">{{ out_of_stock_products }} products are out of stock</small>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="studio-strip">
+            <article class="studio-strip-card">
+                <span>Revenue in 30 days</span>
+                <strong>Rs. {{ monthly_revenue|floatformat:2 }}</strong>
+                <small>Rolling monthly performance window</small>
+            </article>
+            <article class="studio-strip-card">
+                <span>Average order value</span>
+                <strong>Rs. {{ average_order_value|floatformat:2 }}</strong>
+                <small>Revenue quality per transaction</small>
+            </article>
+            <article class="studio-strip-card">
+                <span>Active orders</span>
+                <strong>{{ active_orders }}</strong>
+                <small>Orders still moving through pipeline</small>
+            </article>
+            <article class="studio-strip-card">
+                <span>Wishlist saves</span>
+                <strong>{{ wishlist_saves }}</strong>
+                <small>Customer intent across catalog</small>
+            </article>
+            <article class="studio-strip-card">
+                <span>Reviews</span>
+                <strong>{{ review_count }}</strong>
+                <small>Feedback signals in the store</small>
+            </article>
+            <article class="studio-strip-card">
+                <span>Total products</span>
+                <strong>{{ total_products }}</strong>
+                <small>Live catalog footprint</small>
+            </article>
+        </section>
+
+        <div class="studio-view studio-view-charts">
+            <div class="studio-grid">
+                <section class="studio-card studio-card-dark">
+                    <h2 class="studio-card-title">Performance overview</h2>
+                    <p class="studio-card-subtitle">Revenue and operational metrics arranged for fast executive scanning.</p>
+
+                    <div class="studio-overview">
+                        <article class="studio-spotlight">
+                            <span class="studio-spotlight-label">Revenue scale</span>
+                            <div class="studio-spotlight-value">Rs. {{ total_revenue|floatformat:2 }}</div>
+                            <div class="studio-meter-stack">
+                                <div class="studio-meter-row">
+                                    <span>7 days</span>
+                                    <div class="studio-meter"><div class="studio-meter-fill fill-green" style="width:{% widthratio weekly_revenue total_revenue 100 %}%"></div></div>
+                                    <strong>Rs. {{ weekly_revenue|floatformat:2 }}</strong>
+                                </div>
+                                <div class="studio-meter-row">
+                                    <span>30 days</span>
+                                    <div class="studio-meter"><div class="studio-meter-fill fill-gold" style="width:{% widthratio monthly_revenue total_revenue 100 %}%"></div></div>
+                                    <strong>Rs. {{ monthly_revenue|floatformat:2 }}</strong>
+                                </div>
+                                <div class="studio-meter-row">
+                                    <span>Avg. order</span>
+                                    <div class="studio-meter"><div class="studio-meter-fill fill-blue" style="width:{% widthratio average_order_value total_revenue 100 %}%"></div></div>
+                                    <strong>Rs. {{ average_order_value|floatformat:2 }}</strong>
+                                </div>
+                            </div>
+                        </article>
+
+                        <div class="studio-mini-grid">
+                            <article class="studio-mini">
+                                <span>Delivered orders</span>
+                                <strong>{{ delivered_orders }}</strong>
+                                <small>Completed journeys</small>
+                            </article>
+                            <article class="studio-mini">
+                                <span>Cancelled orders</span>
+                                <strong>{{ cancelled_orders }}</strong>
+                                <small>Pipeline losses</small>
+                            </article>
+                            <article class="studio-mini">
+                                <span>Low stock</span>
+                                <strong>{{ low_stock_products }}</strong>
+                                <small>Needs attention</small>
+                            </article>
+                            <article class="studio-mini">
+                                <span>New customers</span>
+                                <strong>{{ new_customers_30d }}</strong>
+                                <small>Last 30 days</small>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="studio-card">
+                    <h2 class="studio-card-title">Order status chart</h2>
+                    <p class="studio-card-subtitle">Current order-state distribution in one visual breakdown.</p>
+                    <div class="studio-chart-wrap">
+                        <canvas id="statusChart" width="640" height="320"></canvas>
+                    </div>
+                </section>
+            </div>
+
+            <div class="studio-grid">
+                <section class="studio-card">
+                    <h2 class="studio-card-title">Category composition</h2>
+                    <p class="studio-card-subtitle">Compare category concentration across the live catalog.</p>
+                    <div class="studio-chart-wrap">
+                        <canvas id="categoryChart" width="640" height="320"></canvas>
+                    </div>
+                </section>
+
+                <section class="studio-card">
+                    <h2 class="studio-card-title">Top product chart</h2>
+                    <p class="studio-card-subtitle">Products leading the store by sold units and order support.</p>
+                    <div class="studio-chart-wrap">
+                        <canvas id="productChart" width="640" height="320"></canvas>
+                    </div>
+                </section>
+            </div>
+
+            <div class="studio-grid">
+                <section class="studio-card">
+                    <h2 class="studio-card-title">Top product detail</h2>
+                    <p class="studio-card-subtitle">Exact product-level signals beneath the chart layer.</p>
+                    <div class="studio-product-list">
+                        {% for product in top_products %}
+                        <article class="studio-product-card">
+                            <div class="studio-product-head">
+                                <div>
+                                    <strong>{{ product.product__name }}</strong>
+                                    <span class="studio-list-note">{{ product.orders_count }} orders contributing to this result</span>
+                                </div>
+                                <span class="studio-pill">{{ product.units_sold }} units</span>
+                            </div>
+                            <div class="studio-track">
+                                <div class="studio-track-fill" style="width: {% widthratio product.units_sold 100 100 %}%"></div>
+                            </div>
+                            <div class="studio-product-meta">
+                                <span class="studio-chip"><strong>Revenue</strong> Rs. {{ product.revenue|floatformat:2 }}</span>
+                                <span class="studio-chip"><strong>Stock left</strong> {{ product.product__stock }}</span>
+                            </div>
+                        </article>
+                        {% empty %}
+                        <div class="admin-empty-note">No completed order item data is available yet.</div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section class="studio-card">
+                    <h2 class="studio-card-title">Recent review pulse</h2>
+                    <p class="studio-card-subtitle">Latest customer feedback entering the system.</p>
+                    <div class="studio-review-list">
+                        {% for review in recent_reviews %}
+                        <article class="studio-review-card">
+                            <div class="studio-rating">{{ review.rating }}/5</div>
+                            <div>
+                                <strong>{{ review.product.name }}</strong>
+                                <span>{{ review.user.username }} on {{ review.created_at|date:"M d, Y" }}</span>
+                            </div>
+                        </article>
+                        {% empty %}
+                        <div class="admin-empty-note">No customer reviews yet.</div>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div class="studio-view studio-view-data">
+            <section class="studio-card">
+                <h2 class="studio-card-title">Executive summary data</h2>
+                <p class="studio-card-subtitle">Exact values for auditing and deeper operational review.</p>
+                <div class="studio-data-grid">
+                    <article class="studio-data-stat"><span>Total revenue</span><strong>Rs. {{ total_revenue|floatformat:2 }}</strong></article>
+                    <article class="studio-data-stat"><span>Revenue in 7 days</span><strong>Rs. {{ weekly_revenue|floatformat:2 }}</strong></article>
+                    <article class="studio-data-stat"><span>Revenue in 30 days</span><strong>Rs. {{ monthly_revenue|floatformat:2 }}</strong></article>
+                    <article class="studio-data-stat"><span>Average order value</span><strong>Rs. {{ average_order_value|floatformat:2 }}</strong></article>
+                    <article class="studio-data-stat"><span>Total customers</span><strong>{{ total_customers }}</strong></article>
+                    <article class="studio-data-stat"><span>Low stock products</span><strong>{{ low_stock_products }}</strong></article>
+                </div>
+            </section>
+
+            <div class="studio-grid">
+                <section class="studio-card studio-table-card">
+                    <h2 class="studio-card-title">Top products table</h2>
+                    <p class="studio-card-subtitle">High-value products with exact order and stock numbers.</p>
+                    <div class="studio-table">
+                        <div class="studio-table-head">
+                            <span>Product</span><span>Units sold</span><span>Orders</span><span>Revenue</span><span>Stock left</span>
+                        </div>
+                        {% for product in top_products %}
+                        <div class="studio-table-row">
+                            <span>{{ product.product__name }}</span><span>{{ product.units_sold }}</span><span>{{ product.orders_count }}</span><span>Rs. {{ product.revenue|floatformat:2 }}</span><span>{{ product.product__stock }}</span>
+                        </div>
+                        {% empty %}
+                        <div class="admin-empty-note">No completed order item data is available yet.</div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section class="studio-card studio-table-card studio-table-compact">
+                    <h2 class="studio-card-title">Order status table</h2>
+                    <p class="studio-card-subtitle">Count breakdown by order state.</p>
+                    <div class="studio-table">
+                        <div class="studio-table-head">
+                            <span>Status</span><span>Orders</span>
+                        </div>
+                        {% for row in status_summary %}
+                        <div class="studio-table-row">
+                            <span>{{ row.status }}</span><span>{{ row.total }}</span>
+                        </div>
+                        {% empty %}
+                        <div class="admin-empty-note">No orders available yet.</div>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+
+            <div class="studio-grid">
+                <section class="studio-card studio-table-card">
+                    <h2 class="studio-card-title">Recent orders table</h2>
+                    <p class="studio-card-subtitle">Latest transaction records with customer and value detail.</p>
+                    <div class="studio-table">
+                        <div class="studio-table-head">
+                            <span>Order</span><span>Customer</span><span>Status</span><span>Total</span><span>Created</span>
+                        </div>
+                        {% for order in recent_orders %}
+                        <div class="studio-table-row">
+                            <span>#{{ order.id }}</span><span>{{ order.full_name }}</span><span>{{ order.status }}</span><span>Rs. {{ order.total_amount|floatformat:2 }}</span><span>{{ order.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        {% empty %}
+                        <div class="admin-empty-note">No recent orders yet.</div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section class="studio-card">
+                    <h2 class="studio-card-title">Category and review data</h2>
+                    <p class="studio-card-subtitle">Catalog and feedback data in raw format.</p>
+                    <div class="studio-stack">
+                        <div class="studio-product-card">
+                            <strong>Category spread</strong>
+                            {% for category in category_summary %}
+                            <div class="studio-list-note">{{ category.name }} | {{ category.product_count }} products{% if category.avg_price %} | Avg. Rs. {{ category.avg_price|floatformat:2 }}{% endif %}</div>
+                            {% empty %}
+                            <div class="admin-empty-note">No category data available.</div>
+                            {% endfor %}
+                        </div>
+                        <div class="studio-product-card">
+                            <strong>Recent reviews</strong>
+                            {% for review in recent_reviews %}
+                            <div class="studio-list-note">{{ review.product.name }} | {{ review.rating }}/5 | {{ review.user.username }} on {{ review.created_at|date:"M d, Y" }}</div>
+                            {% empty %}
+                            <div class="admin-empty-note">No customer reviews yet.</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <div class="studio-chat">
+        <button type="button" class="studio-chat-toggle" id="report-chat-toggle">AI</button>
+        <div class="studio-chat-window" id="report-chat-window">
+            <div class="studio-chat-header">
+                <strong>Report Assistant</strong>
+                <span>Ask about revenue, orders, products, customers, inventory, or categories.</span>
+            </div>
+            <div class="studio-chat-body" id="report-chat-body">
+                <div class="studio-chat-bubble bot">I can explain the current report and summarize the most important numbers for you.</div>
+                <div class="studio-chat-actions">
+                    <button type="button" data-chat-prompt="What is the revenue trend?">Revenue trend</button>
+                    <button type="button" data-chat-prompt="Which product is performing best?">Top product</button>
+                    <button type="button" data-chat-prompt="How do the orders look right now?">Order pipeline</button>
+                </div>
+            </div>
+            <div class="studio-chat-footer">
+                <form class="studio-chat-form" id="report-chat-form">
+                    <input type="text" id="report-chat-input" placeholder="Ask about this report..." autocomplete="off">
+                    <button type="submit">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const reportRoot = document.querySelector(".report-studio");
+    const toggleButtons = document.querySelectorAll("[data-mode]");
+    const statusData = [
+        {% for row in status_summary %}
+        { label: "{{ row.status|escapejs }}", value: {{ row.total }} }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    const categoryData = [
+        {% for category in category_summary %}
+        { label: "{{ category.name|escapejs }}", value: {{ category.product_count }} }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    const productData = [
+        {% for product in top_products %}
+        { label: "{{ product.product__name|escapejs }}", value: {{ product.units_sold }} }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    function setMode(mode) {
+        reportRoot.classList.toggle("report-mode-data", mode === "data");
+        toggleButtons.forEach(function (button) {
+            button.classList.toggle("is-active", button.dataset.mode === mode);
+        });
+    }
+
+    toggleButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            setMode(button.dataset.mode);
+        });
+    });
+
+    setMode("charts");
+
+    function drawBarChart(canvasId, data, palette) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas || !data.length) return;
+
+        const ctx = canvas.getContext("2d");
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        const width = rect.width || canvas.width;
+        const height = rect.height || canvas.height;
+
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.scale(dpr, dpr);
+
+        const maxValue = Math.max.apply(null, data.map(function (item) { return item.value; }));
+        const chartLeft = 24;
+        const chartTop = 24;
+        const chartWidth = width - 48;
+        const chartHeight = height - 48;
+        const barGap = 18;
+        const barHeight = Math.max(18, (chartHeight - (data.length - 1) * barGap) / data.length);
+
+        ctx.clearRect(0, 0, width, height);
+        ctx.font = "600 13px Manrope";
+        ctx.fillStyle = "#6f7f74";
+
+        data.forEach(function (item, index) {
+            const y = chartTop + index * (barHeight + barGap);
+            const labelY = y + barHeight / 2 + 4;
+            const valueWidth = maxValue ? (item.value / maxValue) * (chartWidth - 150) : 0;
+            const barX = chartLeft + 130;
+
+            ctx.fillText(item.label, chartLeft, labelY);
+
+            ctx.beginPath();
+            ctx.fillStyle = "rgba(23, 54, 41, 0.08)";
+            ctx.roundRect(barX, y, chartWidth - 150, barHeight, 12);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.fillStyle = palette[index % palette.length];
+            ctx.roundRect(barX, y, valueWidth, barHeight, 12);
+            ctx.fill();
+
+            ctx.fillStyle = "#173629";
+            ctx.fillText(String(item.value), barX + valueWidth + 10, labelY);
+        });
+    }
+
+    function drawColumnChart(canvasId, data, palette) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas || !data.length) return;
+
+        const ctx = canvas.getContext("2d");
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        const width = rect.width || canvas.width;
+        const height = rect.height || canvas.height;
+
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.scale(dpr, dpr);
+
+        const maxValue = Math.max.apply(null, data.map(function (item) { return item.value; }));
+        const padding = 28;
+        const chartWidth = width - padding * 2;
+        const chartHeight = height - 70;
+        const gap = 18;
+        const columnWidth = Math.max(36, (chartWidth - gap * (data.length - 1)) / data.length);
+        const baseY = height - 34;
+
+        ctx.clearRect(0, 0, width, height);
+        ctx.font = "600 12px Manrope";
+
+        data.forEach(function (item, index) {
+            const x = padding + index * (columnWidth + gap);
+            const columnHeight = maxValue ? (item.value / maxValue) * chartHeight : 0;
+            const y = baseY - columnHeight;
+
+            ctx.beginPath();
+            ctx.fillStyle = "rgba(23, 54, 41, 0.08)";
+            ctx.roundRect(x, padding, columnWidth, chartHeight, 16);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.fillStyle = palette[index % palette.length];
+            ctx.roundRect(x, y, columnWidth, columnHeight, 16);
+            ctx.fill();
+
+            ctx.fillStyle = "#173629";
+            ctx.textAlign = "center";
+            ctx.fillText(String(item.value), x + columnWidth / 2, y - 10);
+            ctx.fillText(item.label, x + columnWidth / 2, baseY + 18);
+        });
+
+        ctx.textAlign = "start";
+    }
+
+    const palettePrimary = ["#0f6b53", "#d89f4b", "#3b82f6", "#2aa198", "#7c5cff"];
+    const paletteWarm = ["#0f6b53", "#2aa198", "#d89f4b", "#3b82f6", "#7c5cff"];
+
+    drawBarChart("statusChart", statusData, palettePrimary);
+    drawColumnChart("categoryChart", categoryData, paletteWarm);
+    drawBarChart("productChart", productData, paletteWarm);
+
+    const chatToggle = document.getElementById("report-chat-toggle");
+    const chatWindow = document.getElementById("report-chat-window");
+    const chatBody = document.getElementById("report-chat-body");
+    const chatForm = document.getElementById("report-chat-form");
+    const chatInput = document.getElementById("report-chat-input");
+
+    function appendBubble(text, sender) {
+        const bubble = document.createElement("div");
+        bubble.className = "studio-chat-bubble " + sender;
+        bubble.textContent = text;
+        chatBody.appendChild(bubble);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    async function sendChat(message) {
+        appendBubble(message, "user");
+        chatInput.value = "";
+
+        try {
+            const response = await fetch("{% url 'admin_report_chat' %}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: message })
+            });
+            const payload = await response.json();
+            appendBubble(payload.reply || payload.error || "I could not answer that right now.", "bot");
+        } catch (error) {
+            appendBubble("The report assistant could not connect right now. Please try again.", "bot");
+        }
+    }
+
+    chatToggle.addEventListener("click", function () {
+        chatWindow.classList.toggle("is-open");
+    });
+
+    chatBody.addEventListener("click", function (event) {
+        const trigger = event.target.closest("[data-chat-prompt]");
+        if (!trigger) return;
+        sendChat(trigger.dataset.chatPrompt);
+    });
+
+    chatForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const message = chatInput.value.trim();
+        if (!message) return;
+        sendChat(message);
+    });
+});
+</script>
+{% endblock %}

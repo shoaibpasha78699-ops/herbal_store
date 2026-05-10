@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.auth-shell {
+    position: relative;
+    overflow: hidden;
+    padding: 1.2rem;
+    border-radius: 34px;
+    background:
+        radial-gradient(circle at top right, rgba(207, 155, 74, 0.16), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(28, 107, 69, 0.14), transparent 26%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(243, 237, 226, 0.94));
+    border: 1px solid rgba(31, 66, 46, 0.08);
+    box-shadow: var(--shadow-lg);
+}
+
+.auth-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.55), transparent 42%),
+        linear-gradient(315deg, rgba(255, 255, 255, 0.28), transparent 38%);
+    pointer-events: none;
+}
+
+.auth-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.02fr 0.98fr;
+    min-height: 720px;
+    border-radius: 26px;
+    overflow: hidden;
+}
+
+.auth-visual {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2rem;
+    color: #fff;
+    background:
+        linear-gradient(180deg, rgba(10, 28, 18, 0.18), rgba(10, 28, 18, 0.76)),
+        url("https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1400&q=80") center/cover no-repeat;
+}
+
+.auth-visual::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at top left, rgba(207, 155, 74, 0.32), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(28, 107, 69, 0.38), transparent 34%);
+    pointer-events: none;
+}
+
+.auth-visual-top,
+.auth-visual-bottom {
+    position: relative;
+    z-index: 1;
+}
+
+.auth-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.52rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(8px);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.auth-visual h1 {
+    margin: 1.2rem 0 0.8rem;
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(2.6rem, 5vw, 4.8rem);
+    line-height: 0.92;
+    max-width: 12ch;
+}
+
+.auth-visual p {
+    max-width: 34rem;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 1rem;
+    line-height: 1.8;
+}
+
+.auth-insights {
+    display: grid;
+    gap: 0.9rem;
+    max-width: 26rem;
+}
+
+.auth-insight {
+    padding: 1rem 1.05rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(10px);
+}
+
+.auth-insight strong {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 1rem;
+}
+
+.auth-insight span {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.92rem;
+}
+
+.auth-panel {
+    display: flex;
+    align-items: center;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(14px);
+}
+
+.auth-card {
+    width: min(100%, 470px);
+    margin: 0 auto;
+}
+
+.auth-panel-head {
+    margin-bottom: 1.4rem;
+}
+
+.auth-panel-head h2 {
+    margin: 0 0 0.45rem;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-family: "Cormorant Garamond", serif;
+    color: var(--primary-deep);
+}
+
+.auth-panel-head p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.8;
+}
+
+.auth-alert {
+    border-radius: 16px;
+    border: 1px solid rgba(187, 67, 61, 0.16);
+    background: rgba(255, 241, 240, 0.9);
+    color: #9f3f3a;
+    padding: 0.95rem 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 20px rgba(187, 67, 61, 0.08);
+}
+
+.auth-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.auth-field {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.auth-field label {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--primary-deep);
+}
+
+.auth-input-wrap {
+    position: relative;
+}
+
+.auth-input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(28, 107, 69, 0.52);
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+.auth-input,
+.auth-select,
+.auth-textarea {
+    width: 100%;
+    min-height: 56px;
+    border-radius: 18px;
+    border: 1px solid rgba(31, 66, 46, 0.12);
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--text);
+    padding: 0.95rem 1rem 0.95rem 3rem;
+    box-shadow: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.auth-input:focus,
+.auth-select:focus,
+.auth-textarea:focus {
+    outline: none;
+    border-color: rgba(28, 107, 69, 0.3);
+    box-shadow: 0 0 0 0.22rem rgba(28, 107, 69, 0.08);
+    transform: translateY(-1px);
+}
+
+.auth-button {
+    min-height: 58px;
+    border: none;
+    border-radius: 18px;
+    padding: 0.95rem 1.2rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-deep));
+    color: #fff;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    box-shadow: 0 16px 30px rgba(28, 107, 69, 0.22);
+}
+
+.auth-button-secondary {
+    min-height: 56px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    border-radius: 18px;
+    border: 1px solid rgba(31, 66, 46, 0.1);
+    background: rgba(255, 255, 255, 0.88);
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
+}
+
+.auth-button-admin {
+    background: linear-gradient(135deg, #1d2a22, #121914);
+    color: #fff;
+}
+
+.auth-divider {
+    position: relative;
+    text-align: center;
+    margin: 0.5rem 0;
+    color: #8b938d;
+    font-size: 0.84rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: calc(50% - 2rem);
+    height: 1px;
+    background: rgba(31, 66, 46, 0.12);
+}
+
+.auth-divider::before {
+    left: 0;
+}
+
+.auth-divider::after {
+    right: 0;
+}
+
+.auth-helper,
+.auth-switch {
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.auth-switch a,
+.auth-helper a {
+    color: var(--primary);
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.strength-wrap {
+    padding: 0.9rem 1rem;
+    border-radius: 18px;
+    background: rgba(248, 250, 247, 0.95);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+}
+
+.strength-bar-track {
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(31, 66, 46, 0.08);
+    overflow: hidden;
+}
+
+.strength-bar-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #df655c, #ef9b7a);
+    transition: width 0.25s ease, background 0.25s ease;
+}
+
+.rule-list {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 0.8rem;
+    font-size: 0.92rem;
+}
+
+.rule-item {
+    color: #af554e;
+}
+
+.rule-item.valid {
+    color: var(--primary);
+}
+
+.match-message {
+    min-height: 1.4rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+.match-message.valid {
+    color: var(--primary);
+}
+
+.match-message.invalid {
+    color: #af554e;
+}
+
+@media (max-width: 991px) {
+    .auth-grid {
+        grid-template-columns: 1fr;
+        min-height: auto;
+    }
+
+    .auth-visual {
+        min-height: 320px;
+    }
+}
+
+@media (max-width: 576px) {
+    .auth-shell {
+        padding: 0.75rem;
+        border-radius: 24px;
+    }
+
+    .auth-visual,
+    .auth-panel {
+        padding: 1.25rem;
+    }
+
+    .auth-grid {
+        border-radius: 20px;
+    }
+}
+</style>
+
+<section class="auth-shell">
+    <div class="auth-grid">
+        <aside class="auth-visual">
+            <div class="auth-visual-top">
+                <span class="auth-kicker">{{ auth_kicker|default:"Herbal Member Access" }}</span>
+                <h1>{{ auth_visual_title|default:"Wellness begins with a refined digital experience." }}</h1>
+                <p>{{ auth_visual_text|default:"Access your herbal store account, manage orders, and enjoy a smoother path from discovery to checkout." }}</p>
+            </div>
+
+            <div class="auth-visual-bottom">
+                <div class="auth-insights">
+                    <div class="auth-insight">
+                        <strong>Premium shopping flow</strong>
+                        <span>Designed for clarity, speed, and confidence across the full customer journey.</span>
+                    </div>
+                    <div class="auth-insight">
+                        <strong>Secure account access</strong>
+                        <span>Email OTP and Google sign-in keep login simple while staying reliable.</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <section class="auth-panel">
+            <div class="auth-card">
+                {% block auth_content %}{% endblock %}
+            </div>
+        </section>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Herbal Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+    :root {
+        --bg: #f6f1e7;
+        --surface: rgba(255, 255, 255, 0.88);
+        --surface-strong: #ffffff;
+        --line: rgba(31, 66, 46, 0.12);
+        --text: #213126;
+        --muted: #68766b;
+        --primary: #1c6b45;
+        --primary-deep: #15462f;
+        --accent: #cf9b4a;
+        --shadow-lg: 0 22px 52px rgba(21, 40, 29, 0.1);
+        --shadow-md: 0 12px 28px rgba(21, 40, 29, 0.075);
+        --shadow-sm: 0 8px 18px rgba(21, 40, 29, 0.05);
+        --radius-xl: 24px;
+        --radius-lg: 18px;
+        --radius-md: 14px;
+        --radius-pill: 999px;
+    }
+
+    body {
+        margin: 0;
+        font-family: "Manrope", sans-serif;
+        color: var(--text);
+        font-size: 0.96rem;
+        line-height: 1.6;
+        background:
+            radial-gradient(circle at top left, rgba(207, 155, 74, 0.18), transparent 30%),
+            radial-gradient(circle at bottom left, rgba(28, 107, 69, 0.12), transparent 24%),
+            linear-gradient(180deg, #fbf8f2 0%, var(--bg) 100%);
+    }
+
+    .page-shell {
+        max-width: 1240px;
+    }
+
+    .site-navbar {
+        background: rgba(251, 248, 242, 0.88);
+        backdrop-filter: blur(18px);
+        border-bottom: 1px solid rgba(31, 66, 46, 0.08);
+        box-shadow: 0 10px 26px rgba(21, 40, 29, 0.05);
+    }
+
+    .nav-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-top: 0.15rem;
+    }
+
+    .brand-lockup {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+    }
+
+    .brand-mark {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--primary-deep));
+        color: #fff;
+        font-weight: 800;
+        box-shadow: 0 12px 24px rgba(28, 107, 69, 0.18);
+    }
+
+    .brand-copy small {
+        display: block;
+        color: #92a096;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        font-size: 0.68rem;
+        line-height: 1;
+    }
+
+    .brand-copy strong {
+        display: block;
+        color: var(--text);
+        font-size: 0.96rem;
+        line-height: 1.15;
+    }
+
+    .search-shell {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.38rem;
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid rgba(31, 66, 46, 0.08);
+        border-radius: var(--radius-pill);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .search-shell:hover,
+    .search-shell:focus-within {
+        border-color: rgba(28, 107, 69, 0.18);
+        box-shadow: var(--shadow-md);
+    }
+
+    .search-shell input {
+        border: none;
+        background: transparent;
+        box-shadow: none !important;
+        padding-left: 0.55rem;
+    }
+
+    .search-shell input:focus {
+        outline: none;
+    }
+
+    .pill-btn {
+        border-radius: var(--radius-pill);
+        padding: 0.62rem 0.9rem;
+        font-size: 0.94rem;
+        font-weight: 700;
+        border: 1px solid rgba(31, 66, 46, 0.1);
+        background: rgba(255, 255, 255, 0.86);
+        color: var(--text);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .pill-btn:hover {
+        border-color: rgba(28, 107, 69, 0.2);
+        box-shadow: var(--shadow-md);
+    }
+
+    .pill-btn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 999px;
+        background: rgba(28, 107, 69, 0.08);
+        color: var(--primary);
+        font-size: 0.72rem;
+        font-weight: 800;
+    }
+
+    .pill-btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-deep));
+        color: #fff;
+        border-color: transparent;
+    }
+
+    .badge-soft {
+        background: linear-gradient(135deg, #ff857d, #d84d42);
+        color: #fff;
+        border-radius: var(--radius-pill);
+        padding: 0.25rem 0.48rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        min-width: 1.45rem;
+    }
+
+    .content-wrap {
+        padding-top: 1.35rem;
+        padding-bottom: 1.7rem;
+    }
+
+    .top-notice {
+        padding: 0.58rem 0;
+        background: linear-gradient(90deg, rgba(28, 107, 69, 0.96), rgba(21, 70, 47, 0.96));
+        color: rgba(255, 255, 255, 0.92);
+        font-size: 0.8rem;
+        letter-spacing: 0.01em;
+    }
+
+    .top-notice-shell {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .top-notice strong {
+        color: #fff;
+    }
+
+    .dropdown-menu {
+        border: 1px solid rgba(31, 66, 46, 0.08);
+        border-radius: 15px;
+        box-shadow: var(--shadow-md);
+        padding: 0.5rem;
+    }
+
+    .dropdown-item {
+        border-radius: 10px;
+        font-weight: 600;
+        padding: 0.65rem 0.8rem;
+    }
+
+    .dropdown-item:hover {
+        background: rgba(28, 107, 69, 0.08);
+    }
+
+    #support-chat-widget {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 1050;
+    }
+
+    #support-chat-toggle {
+        width: 56px;
+        height: 56px;
+        border: none;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--primary-deep));
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        box-shadow: 0 12px 28px rgba(28, 107, 69, 0.22);
+    }
+
+    #support-chat-window {
+        position: absolute;
+        right: 0;
+        bottom: 68px;
+        width: 320px;
+        max-width: calc(100vw - 24px);
+        border: 1px solid rgba(25, 135, 84, 0.12);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #fff;
+        display: none;
+        box-shadow: var(--shadow-lg);
+    }
+
+    #support-chat-window.open {
+        display: block;
+    }
+
+    #support-chat-header {
+        background: linear-gradient(135deg, var(--primary), var(--primary-deep));
+        color: #fff;
+        padding: 12px 14px;
+    }
+
+    #support-chat-header h6 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    #support-chat-header p {
+        margin: 4px 0 0;
+        font-size: 11px;
+        opacity: 0.9;
+    }
+
+    #support-chat-body {
+        height: 300px;
+        overflow-y: auto;
+        padding: 12px;
+        background: #f8fbf8;
+    }
+
+    .support-chat-row {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .support-chat-row.bot {
+        justify-content: flex-start;
+    }
+
+    .support-chat-row.user {
+        justify-content: flex-end;
+    }
+
+    .support-chat-bubble {
+        max-width: 82%;
+        padding: 9px 12px;
+        border-radius: 14px;
+        font-size: 13px;
+        line-height: 1.45;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        word-break: break-word;
+    }
+
+    .support-chat-row.bot .support-chat-bubble {
+        background: #fff;
+        color: #1f2937;
+        border-top-left-radius: 6px;
+    }
+
+    .support-chat-row.user .support-chat-bubble {
+        background: var(--primary);
+        color: #fff;
+        border-top-right-radius: 6px;
+    }
+
+    .support-chat-meta {
+        margin-bottom: 10px;
+        margin-top: 4px;
+        font-size: 11px;
+        color: rgba(104, 118, 107, 0.9);
+    }
+
+    .support-chat-meta.user {
+        text-align: right;
+    }
+
+    .support-chat-rich {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .support-chat-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .support-chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: 0.5rem 0.8rem;
+        border-radius: 999px;
+        border: 1px solid rgba(31, 66, 46, 0.1);
+        background: #fff;
+        color: var(--text);
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .support-chip:hover {
+        border-color: rgba(28, 107, 69, 0.22);
+        background: rgba(28, 107, 69, 0.06);
+        color: var(--primary-deep);
+    }
+
+    .support-product-card {
+        display: block;
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid rgba(31, 66, 46, 0.08);
+        color: inherit;
+        text-decoration: none;
+        box-shadow: 0 6px 14px rgba(21, 40, 29, 0.05);
+    }
+
+    .support-product-card strong {
+        display: block;
+        color: var(--primary-deep);
+        font-size: 13px;
+        margin-bottom: 2px;
+    }
+
+    .support-product-card span {
+        display: block;
+        color: var(--muted);
+        font-size: 11px;
+    }
+
+    .support-product-price {
+        margin-top: 6px;
+        color: var(--primary);
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .support-typing {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .support-typing-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(28, 107, 69, 0.45);
+        animation: supportTypingPulse 1s infinite ease-in-out;
+    }
+
+    .support-typing-dot:nth-child(2) {
+        animation-delay: 0.15s;
+    }
+
+    .support-typing-dot:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    @keyframes supportTypingPulse {
+        0%, 80%, 100% {
+            transform: translateY(0);
+            opacity: 0.35;
+        }
+        40% {
+            transform: translateY(-2px);
+            opacity: 1;
+        }
+    }
+
+    #support-chat-footer {
+        padding: 10px;
+        border-top: 1px solid #e9ecef;
+        background: #fff;
+    }
+
+    #support-chat-input {
+        border-radius: 999px 0 0 999px;
+    }
+
+    #support-chat-send {
+        border-radius: 0 999px 999px 0;
+        min-width: 72px;
+    }
+
+    @media (max-width: 991px) {
+        .top-notice-shell {
+            justify-content: center;
+            text-align: center;
+        }
+
+        .search-shell {
+            margin: 1rem 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .site-navbar .container {
+            padding-left: 0.9rem;
+            padding-right: 0.9rem;
+        }
+
+        #support-chat-widget {
+            right: 12px;
+            bottom: 12px;
+        }
+
+        #support-chat-window {
+            width: min(340px, calc(100vw - 24px));
+            right: 0;
+            bottom: 72px;
+        }
+
+        #support-chat-body {
+            height: 280px;
+        }
+    }
+    </style>
+
+</head>
+
+<body>
+<div class="top-notice">
+<div class="container page-shell top-notice-shell">
+        <span><strong>Premium herbal essentials</strong> for wellness, beauty, and everyday care.</span>
+        <span>Secure ordering, thoughtful support, and a smoother shopping experience.</span>
+    </div>
+</div>
+
+<nav class="navbar navbar-expand-lg site-navbar sticky-top">
+<div class="container page-shell py-2">
+
+<a class="navbar-brand me-4" href="/">
+    <span class="brand-lockup">
+        <span class="brand-mark">HS</span>
+        <span class="brand-copy">
+            <small>Natural Wellness</small>
+            <strong>Herbal Store</strong>
+            <span class="nav-meta">
+                <span class="pill-btn-icon">+</span>
+                <span class="text-muted small">Clean ingredients. Confident shopping.</span>
+            </span>
+        </span>
+    </span>
+</a>
+
+<button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav">
+<span class="navbar-toggler-icon"></span>
+</button>
+
+<div class="collapse navbar-collapse" id="nav">
+
+<form method="GET" action="/search/" class="search-shell d-flex mx-auto w-50" role="search">
+<input type="text" name="q" class="form-control" placeholder="Search herbal products, oils, teas, and more">
+<button class="btn pill-btn pill-btn-primary ms-2" type="submit">Search</button>
+</form>
+
+<div class="d-flex align-items-center gap-2 flex-wrap">
+
+<a href="{% url 'cart' %}" class="pill-btn text-decoration-none d-flex align-items-center gap-2">
+    <span>Cart</span>
+    <span class="badge-soft">{{ cart_count }}</span>
+</a>
+{% if not user.is_authenticated %}
+<a href="{% url 'my_orders' %}" class="pill-btn text-decoration-none">Track Orders</a>
+{% endif %}
+
+{% if user.is_authenticated %}
+<div class="dropdown">
+<button class="btn pill-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    {{ user.username }}
+</button>
+<ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+    <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
+    <li><a class="dropdown-item" href="{% url 'my_orders' %}">My Orders</a></li>
+    <li><a class="dropdown-item" href="{% url 'wishlist' %}">Wishlist ({{ wishlist_count }})</a></li>
+    <li><a class="dropdown-item" href="{% url 'my_address' %}">Saved Addresses</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Log Out</a></li>
+</ul>
+</div>
+
+{% else %}
+
+<a href="/login/" class="pill-btn pill-btn-primary text-decoration-none">Log In</a>
+
+{% endif %}
+
+</div>
+
+</div>
+</div>
+</nav>
+
+
+<div class="container page-shell content-wrap">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<div id="support-chat-widget">
+    <button type="button" id="support-chat-toggle" aria-label="Open customer support chat">
+        Help
+    </button>
+
+    <div id="support-chat-window" class="shadow-lg">
+        <div id="support-chat-header">
+            <h6>Customer Support</h6>
+            <p>Ask about products, delivery, cart, checkout, wishlist, and your orders.</p>
+        </div>
+
+        <div id="support-chat-body">
+            <div class="support-chat-row bot">
+                <div class="support-chat-bubble">
+                    Welcome to Herbal Store support. I can help you discover products, answer delivery and payment questions, and guide you through orders faster.
+                </div>
+            </div>
+            <div class="support-chat-rich">
+                <div class="support-chat-actions">
+                    <button type="button" class="support-chip" data-chat-prompt="show immunity products">Immunity picks</button>
+                    <button type="button" class="support-chip" data-chat-prompt="track my order">Track my order</button>
+                    <button type="button" class="support-chip" data-chat-prompt="how does delivery work">Delivery help</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="support-chat-footer">
+            <form id="support-chat-form">
+                <div class="input-group">
+                    <input
+                        type="text"
+                        id="support-chat-input"
+                        class="form-control"
+                        placeholder="Type your message..."
+                        autocomplete="off"
+                    >
+                    <button type="submit" id="support-chat-send" class="btn btn-success">
+                        Send
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const chatToggle = document.getElementById("support-chat-toggle");
+    const chatWindow = document.getElementById("support-chat-window");
+    const chatForm = document.getElementById("support-chat-form");
+    const chatInput = document.getElementById("support-chat-input");
+    const chatBody = document.getElementById("support-chat-body");
+    const chatSend = document.getElementById("support-chat-send");
+
+    function getTimestamp() {
+        return new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+    function scrollChatToBottom() {
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function addMessage(message, sender) {
+        const row = document.createElement("div");
+        row.className = "support-chat-row " + sender;
+
+        const bubble = document.createElement("div");
+        bubble.className = "support-chat-bubble";
+        bubble.textContent = message;
+
+        row.appendChild(bubble);
+        chatBody.appendChild(row);
+
+        const meta = document.createElement("div");
+        meta.className = "support-chat-meta " + sender;
+        meta.textContent = sender === "bot" ? "Herbal Store Assistant • " + getTimestamp() : "You • " + getTimestamp();
+        chatBody.appendChild(meta);
+
+        scrollChatToBottom();
+
+        return { row: row, bubble: bubble, meta: meta };
+    }
+
+    function addRichContent(payload) {
+        const wrap = document.createElement("div");
+        wrap.className = "support-chat-rich";
+
+        if (payload.products && payload.products.length) {
+            payload.products.forEach(function(product) {
+                const card = document.createElement("a");
+                card.className = "support-product-card";
+                card.href = product.url;
+                card.innerHTML =
+                    "<strong>" + product.name + "</strong>" +
+                    "<span>" + product.category + "</span>" +
+                    "<div class='support-product-price'>" + product.price + "</div>";
+                wrap.appendChild(card);
+            });
+        }
+
+        if (payload.quick_actions && payload.quick_actions.length) {
+            const actions = document.createElement("div");
+            actions.className = "support-chat-actions";
+
+            payload.quick_actions.forEach(function(action) {
+                if (action.url) {
+                    const link = document.createElement("a");
+                    link.className = "support-chip";
+                    link.href = action.url;
+                    link.textContent = action.label;
+                    actions.appendChild(link);
+                } else if (action.text) {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "support-chip";
+                    button.textContent = action.label;
+                    button.dataset.chatPrompt = action.text;
+                    actions.appendChild(button);
+                }
+            });
+
+            wrap.appendChild(actions);
+        }
+
+        if (wrap.children.length) {
+            chatBody.appendChild(wrap);
+            scrollChatToBottom();
+        }
+    }
+
+    function addTypingIndicator() {
+        const row = document.createElement("div");
+        row.className = "support-chat-row bot";
+
+        const bubble = document.createElement("div");
+        bubble.className = "support-chat-bubble";
+        bubble.innerHTML =
+            "<span class='support-typing'>" +
+                "<span class='support-typing-dot'></span>" +
+                "<span class='support-typing-dot'></span>" +
+                "<span class='support-typing-dot'></span>" +
+            "</span>";
+
+        row.appendChild(bubble);
+        chatBody.appendChild(row);
+        scrollChatToBottom();
+        return row;
+    }
+
+    async function sendChatMessage(message) {
+        addMessage(message, "user");
+        chatInput.value = "";
+        chatSend.disabled = true;
+
+        const typingRow = addTypingIndicator();
+
+        try {
+            const response = await fetch("{% url 'support_chat' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Current-Path": window.location.pathname
+                },
+                body: JSON.stringify({ message: message })
+            });
+
+            const payload = await response.json();
+            typingRow.remove();
+
+            if (!response.ok) {
+                addMessage(payload.error || "Something went wrong while contacting support.", "bot");
+                return;
+            }
+
+            addMessage(payload.reply, "bot");
+            addRichContent(payload);
+        } catch (error) {
+            typingRow.remove();
+            addMessage("I could not reach support right now. Please try again in a moment.", "bot");
+        } finally {
+            chatSend.disabled = false;
+            chatInput.focus();
+        }
+    }
+
+    chatToggle.addEventListener("click", function() {
+        chatWindow.classList.toggle("open");
+
+        if (chatWindow.classList.contains("open")) {
+            chatInput.focus();
+            scrollChatToBottom();
+        }
+    });
+
+    chatForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const message = chatInput.value.trim();
+        if (!message) {
+            return;
+        }
+
+        sendChatMessage(message);
+    });
+
+    chatBody.addEventListener("click", function(event) {
+        const trigger = event.target.closest("[data-chat-prompt]");
+        if (!trigger) {
+            return;
+        }
+
+        const prompt = trigger.getAttribute("data-chat-prompt");
+        if (!prompt) {
+            return;
+        }
+
+        sendChatMessage(prompt);
+    });
+});
+</script>
+
+</body>
+</html>

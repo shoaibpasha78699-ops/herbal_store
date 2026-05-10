@@ -1,0 +1,498 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+.product-shell {
+    display: grid;
+    gap: 1.15rem;
+}
+
+.product-stage,
+.review-shell,
+.review-form-shell {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+    border-radius: 22px;
+    box-shadow: var(--shadow-sm);
+}
+
+.product-stage {
+    padding: 1.2rem;
+}
+
+.product-media {
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    min-height: 100%;
+    background: linear-gradient(180deg, #edf4ee, #f4eadb);
+    box-shadow: var(--shadow-md);
+}
+
+.product-media img {
+    width: 100%;
+    height: 100%;
+    min-height: 460px;
+    object-fit: cover;
+    display: block;
+}
+
+.product-media-badge {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.85rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--primary-deep);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    box-shadow: var(--shadow-sm);
+}
+
+.product-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.2rem 0.1rem 0.2rem 0.5rem;
+}
+
+.product-category {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 0.42rem 0.74rem;
+    border-radius: 999px;
+    background: rgba(28, 107, 69, 0.08);
+    color: var(--primary);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.product-title {
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(2rem, 4.4vw, 3.2rem);
+    line-height: 0.98;
+    margin: 0;
+    color: var(--primary-deep);
+}
+
+.rating-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem;
+    color: var(--muted);
+}
+
+.rating-chip,
+.status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.48rem 0.72rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.84rem;
+}
+
+.rating-chip {
+    background: rgba(207, 155, 74, 0.14);
+    color: #8c631f;
+}
+
+.status-chip {
+    background: rgba(28, 107, 69, 0.1);
+    color: var(--primary);
+}
+
+.product-price-block {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 0.8rem 1rem;
+}
+
+.product-price-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.price-current {
+    font-size: clamp(1.7rem, 3.6vw, 2.5rem);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--primary);
+}
+
+.price-original {
+    color: #8b928c;
+    text-decoration: line-through;
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+.price-saving {
+    padding: 0.58rem 0.82rem;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(28, 107, 69, 0.1), rgba(207, 155, 74, 0.12));
+    border: 1px solid rgba(31, 66, 46, 0.08);
+}
+
+.price-saving strong {
+    display: block;
+    font-size: 0.92rem;
+    color: var(--primary-deep);
+}
+
+.price-saving span {
+    color: var(--muted);
+    font-size: 0.84rem;
+}
+
+.product-description {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.96rem;
+    line-height: 1.68;
+}
+
+.product-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.metric-card {
+    padding: 0.85rem;
+    border-radius: 16px;
+    background: rgba(248, 250, 247, 0.92);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+}
+
+.metric-card strong {
+    display: block;
+    color: var(--primary-deep);
+    margin-bottom: 0.25rem;
+}
+
+.metric-card span {
+    color: var(--muted);
+    font-size: 0.86rem;
+}
+
+.action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0.78rem 1.15rem;
+    border-radius: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+}
+
+.action-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-deep));
+    color: #fff;
+    box-shadow: 0 12px 24px rgba(28, 107, 69, 0.2);
+}
+
+.action-secondary {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--text);
+    border: 1px solid rgba(31, 66, 46, 0.12);
+}
+
+.review-form-shell,
+.review-shell {
+    padding: 1.15rem;
+}
+
+.panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+    margin-bottom: 0.85rem;
+}
+
+.panel-title {
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+    color: var(--primary-deep);
+    margin: 0;
+}
+
+.panel-text {
+    margin: 0;
+    color: var(--muted);
+}
+
+.review-form-shell .form-label {
+    font-weight: 700;
+    color: var(--primary-deep);
+}
+
+.review-form-shell .form-control,
+.review-form-shell .form-select {
+    border-radius: 16px;
+    border: 1px solid rgba(31, 66, 46, 0.14);
+    padding: 0.72rem 0.9rem;
+    box-shadow: none;
+}
+
+.review-form-shell .form-control:focus,
+.review-form-shell .form-select:focus {
+    border-color: rgba(28, 107, 69, 0.28);
+    box-shadow: 0 0 0 0.22rem rgba(28, 107, 69, 0.08);
+}
+
+.review-list {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.review-card {
+    padding: 0.95rem 1rem;
+    border-radius: 16px;
+    background: rgba(248, 250, 247, 0.92);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+}
+
+.review-card-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.review-card strong {
+    color: var(--primary-deep);
+}
+
+.review-meta {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.review-card p {
+    margin: 0.65rem 0 0;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.empty-note {
+    padding: 1rem;
+    border-radius: 14px;
+    background: rgba(248, 250, 247, 0.92);
+    border: 1px dashed rgba(31, 66, 46, 0.18);
+    color: var(--muted);
+    text-align: center;
+}
+
+@media (max-width: 991px) {
+    .product-summary {
+        padding: 0;
+        margin-top: 1rem;
+    }
+
+    .product-media img {
+        min-height: 320px;
+    }
+
+    .product-metrics {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .product-stage,
+    .review-shell,
+    .review-form-shell {
+        border-radius: 22px;
+        padding: 1rem;
+    }
+
+    .action-row {
+        flex-direction: column;
+    }
+
+    .action-btn {
+        width: 100%;
+    }
+}
+</style>
+
+<div class="product-shell">
+    <section class="product-stage">
+        <div class="row g-4 align-items-stretch">
+            <div class="col-lg-6">
+                <div class="product-media">
+                    <span class="product-media-badge">Premium Herbal Care</span>
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                    <img src="https://via.placeholder.com/900x900?text=Herbal+Product" alt="{{ product.name }}">
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="product-summary">
+                    <span class="product-category">
+                        {% if product.category %}{{ product.category.name }}{% else %}Wellness Collection{% endif %}
+                    </span>
+
+                    <div>
+                        <h1 class="product-title">{{ product.name }}</h1>
+                    </div>
+
+                    <div class="rating-row">
+                        <span class="rating-chip">★ {{ avg_rating|default:"0" }}/5</span>
+                        <span>{{ review_count }} customer review{{ review_count|pluralize }}</span>
+                        <span class="status-chip">
+                            {% if product.stock > 0 %}In stock{% else %}Out of stock{% endif %}
+                        </span>
+                    </div>
+
+                    <div class="product-price-block">
+                        <div class="product-price-main">
+                            <span class="price-current">₹{{ product.discounted_price }}</span>
+                            {% if product.discount_percent > 0 %}
+                            <span class="price-original">₹{{ product.price }}</span>
+                            {% endif %}
+                        </div>
+
+                        {% if product.discount_percent > 0 %}
+                        <div class="price-saving">
+                            <strong>Save ₹{{ saving }}</strong>
+                            <span>{{ product.discount_percent }}% limited-time offer</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <p class="product-description">{{ product.description }}</p>
+
+                    <div class="product-metrics">
+                        <div class="metric-card">
+                            <strong>{{ product.stock }}</strong>
+                            <span>Units ready to ship</span>
+                        </div>
+                        <div class="metric-card">
+                            <strong>Fast delivery</strong>
+                            <span>Usually dispatched within 24 to 48 hours</span>
+                        </div>
+                        <div class="metric-card">
+                            <strong>Trusted quality</strong>
+                            <span>Carefully selected herbal wellness products</span>
+                        </div>
+                    </div>
+
+                    <div class="action-row">
+                        {% if product.stock > 0 %}
+                        <a href="{% url 'add_to_cart' product.id %}" class="action-btn action-primary">Add to Cart</a>
+                        {% endif %}
+                        <a href="{% url 'home' %}" class="action-btn action-secondary">Continue Shopping</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="review-form-shell">
+        <div class="panel-head">
+            <div>
+                <h2 class="panel-title">Share Your Experience</h2>
+                <p class="panel-text">Thoughtful reviews help other shoppers choose with confidence.</p>
+            </div>
+        </div>
+
+        {% if user.is_authenticated %}
+        <form method="POST" action="{% url 'add_review' product.id %}" class="row g-3">
+            {% csrf_token %}
+
+            <div class="col-md-4">
+                <label class="form-label" for="rating">Rating</label>
+                <select id="rating" name="rating" class="form-select" required>
+                    <option value="">Select a rating</option>
+                    <option value="5">★★★★★ Excellent</option>
+                    <option value="4">★★★★ Very good</option>
+                    <option value="3">★★★ Good</option>
+                    <option value="2">★★ Fair</option>
+                    <option value="1">★ Poor</option>
+                </select>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label" for="comment">Comment</label>
+                <textarea
+                    id="comment"
+                    name="comment"
+                    class="form-control"
+                    rows="4"
+                    placeholder="Tell other customers what you liked, how you used it, or how it felt."
+                ></textarea>
+            </div>
+
+            <div class="col-12 d-flex flex-wrap align-items-center gap-3">
+                <button type="submit" class="btn pill-btn pill-btn-primary px-4">Submit Review</button>
+                {% if user_review %}
+                <span class="panel-text">You already reviewed this product. Submitting again will update your review.</span>
+                {% endif %}
+            </div>
+        </form>
+        {% else %}
+        <div class="empty-note">
+            Please <a href="{% url 'login' %}">log in</a> to write a review.
+        </div>
+        {% endif %}
+    </section>
+
+    <section class="review-shell">
+        <div class="panel-head">
+            <div>
+                <h2 class="panel-title">Customer Reviews</h2>
+                <p class="panel-text">{{ review_count }} review{{ review_count|pluralize }} collected for this product.</p>
+            </div>
+        </div>
+
+        {% if reviews %}
+        <div class="review-list">
+            {% for r in reviews %}
+            <article class="review-card">
+                <div class="review-card-top">
+                    <div>
+                        <strong>{{ r.user.username }}</strong>
+                        <div class="review-meta">Rated {{ r.rating }}/5</div>
+                    </div>
+                    <div class="review-meta">{{ r.created_at|date:"M d, Y" }}</div>
+                </div>
+                <p>{% if r.comment %}{{ r.comment }}{% else %}This customer left a rating without a written comment.{% endif %}</p>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-note">
+            No reviews yet. Be the first to share your experience with this product.
+        </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

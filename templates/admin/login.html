@@ -1,0 +1,76 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block bodyclass %}{{ block.super }} login admin-login-shell{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block coltype %}colM{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div class="admin-login-layout">
+    <section class="admin-login-visual">
+        <span class="admin-kicker">Secure Admin Access</span>
+        <h1>Operate Herbal Store from a premium control desk.</h1>
+        <p>
+            Review catalog updates, orders, customer activity, and store operations through a sign-in experience that feels intentional and executive-level.
+        </p>
+
+        <div class="admin-visual-points">
+            <div class="admin-visual-card">
+                <strong>Catalog control</strong>
+                <span>Update herbal products, pricing, and inventory with more clarity.</span>
+            </div>
+            <div class="admin-visual-card">
+                <strong>Order operations</strong>
+                <span>Track deliveries, customer activity, and store operations in one place.</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="admin-login-card">
+        <div class="admin-panel-head">
+            <span class="admin-eyebrow">Administrator Sign In</span>
+            <h2>Welcome back</h2>
+            <p>Use your admin credentials to enter the store dashboard securely.</p>
+        </div>
+
+        {% if form.errors and not form.non_field_errors %}
+        <div class="admin-alert errornote">
+            {% if form.errors.items|length == 1 %}
+            {% translate "Please correct the error below." %}
+            {% else %}
+            {% translate "Please correct the errors below." %}
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if form.non_field_errors %}
+        <div class="admin-alert errornote">
+            {% for error in form.non_field_errors %}
+            <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form action="{{ app_path }}" method="post" id="login-form" class="admin-auth-form">
+            {% csrf_token %}
+
+            <div class="admin-field">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+
+            <div class="admin-field">
+                {{ form.password.label_tag }}
+                {{ form.password }}
+                <input type="hidden" name="next" value="{{ next }}">
+            </div>
+
+            <div class="submit-row">
+                <input type="submit" value="{% translate 'Log in' %}">
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}

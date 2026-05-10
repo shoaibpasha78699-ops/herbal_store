@@ -1,0 +1,449 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.cart-shell {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.cart-hero,
+.cart-list,
+.cart-summary,
+.empty-cart-shell {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+    border-radius: 28px;
+    box-shadow: var(--shadow-sm);
+}
+
+.cart-hero {
+    padding: 1.5rem;
+    background:
+        radial-gradient(circle at top right, rgba(207, 155, 74, 0.16), transparent 28%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(245, 239, 228, 0.94));
+}
+
+.cart-hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+.cart-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.48rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(28, 107, 69, 0.08);
+    color: var(--primary);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.cart-title {
+    margin: 1rem 0 0.6rem;
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    line-height: 0.95;
+    color: var(--primary-deep);
+}
+
+.cart-subtitle {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.8;
+    max-width: 46rem;
+}
+
+.cart-highlight {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.cart-highlight-card {
+    padding: 1rem 1.1rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+    box-shadow: var(--shadow-sm);
+}
+
+.cart-highlight-card strong {
+    display: block;
+    color: var(--primary-deep);
+    font-size: 1.2rem;
+}
+
+.cart-highlight-card span {
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.cart-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.75fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.cart-list {
+    padding: 1.25rem;
+}
+
+.cart-list-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.cart-list-head h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--primary-deep);
+}
+
+.cart-list-head p {
+    margin: 0;
+    color: var(--muted);
+}
+
+.cart-item {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr) auto;
+    gap: 1.1rem;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 22px;
+    background: rgba(248, 250, 247, 0.9);
+    border: 1px solid rgba(31, 66, 46, 0.08);
+}
+
+.cart-item + .cart-item {
+    margin-top: 1rem;
+}
+
+.cart-item-media {
+    overflow: hidden;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #edf4ee, #f4eadb);
+    aspect-ratio: 1 / 1;
+}
+
+.cart-item-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.cart-item-body {
+    min-width: 0;
+}
+
+.cart-item-title {
+    margin: 0 0 0.35rem;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--primary-deep);
+}
+
+.cart-item-price {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    color: var(--muted);
+    margin-bottom: 0.9rem;
+}
+
+.cart-item-price strong {
+    color: var(--primary);
+    font-size: 1.05rem;
+}
+
+.qty-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.4rem;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid rgba(31, 66, 46, 0.12);
+}
+
+.qty-btn {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    text-decoration: none;
+    color: var(--primary-deep);
+    background: rgba(28, 107, 69, 0.08);
+    font-weight: 800;
+}
+
+.qty-value {
+    min-width: 32px;
+    text-align: center;
+    font-weight: 800;
+    color: var(--primary-deep);
+}
+
+.cart-item-side {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 0.8rem;
+}
+
+.line-total {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--primary-deep);
+}
+
+.remove-link {
+    color: #bb433d;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.cart-summary {
+    position: sticky;
+    top: 110px;
+    padding: 1.35rem;
+}
+
+.summary-title {
+    margin: 0 0 1rem;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--primary-deep);
+}
+
+.summary-lines {
+    display: grid;
+    gap: 0.9rem;
+    margin-bottom: 1.25rem;
+}
+
+.summary-line,
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.summary-line {
+    color: var(--muted);
+}
+
+.summary-total {
+    padding-top: 1rem;
+    border-top: 1px solid rgba(31, 66, 46, 0.08);
+    color: var(--primary-deep);
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+.summary-note {
+    padding: 0.95rem 1rem;
+    border-radius: 18px;
+    background: rgba(28, 107, 69, 0.08);
+    color: var(--primary-deep);
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.summary-actions {
+    display: grid;
+    gap: 0.8rem;
+    margin-top: 1.2rem;
+}
+
+.summary-actions .btn {
+    min-height: 52px;
+    border-radius: 18px;
+    font-weight: 800;
+}
+
+.empty-cart-shell {
+    padding: 2rem 1.5rem;
+    text-align: center;
+}
+
+.empty-cart-visual {
+    width: 92px;
+    height: 92px;
+    margin: 0 auto 1rem;
+    display: grid;
+    place-items: center;
+    border-radius: 28px;
+    background: linear-gradient(135deg, rgba(28, 107, 69, 0.12), rgba(207, 155, 74, 0.18));
+    color: var(--primary-deep);
+    font-size: 2rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.empty-cart-shell h2 {
+    margin-bottom: 0.6rem;
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--primary-deep);
+}
+
+.empty-cart-shell p {
+    margin: 0 auto 1.4rem;
+    max-width: 34rem;
+    color: var(--muted);
+    line-height: 1.8;
+}
+
+@media (max-width: 991px) {
+    .cart-hero-grid,
+    .cart-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cart-summary {
+        position: static;
+    }
+}
+
+@media (max-width: 767px) {
+    .cart-item {
+        grid-template-columns: 1fr;
+    }
+
+    .cart-item-media {
+        max-width: 180px;
+    }
+
+    .cart-item-side {
+        align-items: start;
+    }
+}
+</style>
+
+<div class="cart-shell">
+    {% if products %}
+    <section class="cart-hero">
+        <div class="cart-hero-grid">
+            <div>
+                <span class="cart-kicker">Checkout Ready</span>
+                <h1 class="cart-title">Your Cart, Curated for a Faster Checkout</h1>
+                <p class="cart-subtitle">
+                    Review your herbal essentials, adjust quantities with ease, and move to checkout with a cleaner, more reliable shopping flow.
+                </p>
+            </div>
+
+            <div class="cart-highlight">
+                <div class="cart-highlight-card">
+                    <strong>{{ products|length }} item{{ products|length|pluralize }}</strong>
+                    <span>Selected and ready for secure checkout.</span>
+                </div>
+                <div class="cart-highlight-card">
+                    <strong>₹{{ total }}</strong>
+                    <span>Order value before taxes and delivery adjustments.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="cart-grid">
+        <section class="cart-list">
+            <div class="cart-list-head">
+                <div>
+                    <h2>Cart Items</h2>
+                    <p>Update quantities or remove products before placing your order.</p>
+                </div>
+            </div>
+
+            {% for product in products %}
+            <article class="cart-item">
+                <div class="cart-item-media">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                    <img src="https://via.placeholder.com/300x300?text=Herbal+Product" alt="{{ product.name }}">
+                    {% endif %}
+                </div>
+
+                <div class="cart-item-body">
+                    <h3 class="cart-item-title">{{ product.name }}</h3>
+                    <div class="cart-item-price">
+                        <strong>₹{{ product.final_price }}</strong>
+                        <span>Per unit</span>
+                    </div>
+
+                    <div class="qty-control" aria-label="Quantity controls">
+                        <a href="{% url 'decrease_cart' product.id %}" class="qty-btn" aria-label="Decrease quantity">−</a>
+                        <span class="qty-value">{{ product.quantity }}</span>
+                        <a href="{% url 'increase_cart' product.id %}" class="qty-btn" aria-label="Increase quantity">+</a>
+                    </div>
+                </div>
+
+                <div class="cart-item-side">
+                    <div class="line-total">₹{{ product.total_price }}</div>
+                    <a href="{% url 'remove_from_cart' product.id %}" class="remove-link">Remove item</a>
+                </div>
+            </article>
+            {% endfor %}
+        </section>
+
+        <aside class="cart-summary">
+            <h2 class="summary-title">Order Summary</h2>
+
+            <div class="summary-lines">
+                <div class="summary-line">
+                    <span>Subtotal</span>
+                    <span>₹{{ total }}</span>
+                </div>
+                <div class="summary-line">
+                    <span>Shipping</span>
+                    <span>Calculated at checkout</span>
+                </div>
+                <div class="summary-line">
+                    <span>Support</span>
+                    <span>Available if you need help</span>
+                </div>
+                <div class="summary-total">
+                    <span>Total</span>
+                    <span>₹{{ total }}</span>
+                </div>
+            </div>
+
+            <div class="summary-note">
+                Your cart is saved in this session, so you can continue shopping and return when you are ready to complete payment.
+            </div>
+
+            <div class="summary-actions">
+                <a href="{% url 'checkout' %}" class="btn pill-btn pill-btn-primary text-decoration-none text-center">Proceed to Checkout</a>
+                <a href="{% url 'home' %}" class="btn pill-btn text-decoration-none text-center">Continue Shopping</a>
+            </div>
+        </aside>
+    </div>
+    {% else %}
+    <section class="empty-cart-shell">
+        <div class="empty-cart-visual">🛒</div>
+        <h2>Your Cart Is Empty</h2>
+        <p>
+            Start with one of our herbal wellness products and build a thoughtful order. Once you add items, they will appear here with a cleaner summary and faster path to checkout.
+        </p>
+        <a href="{% url 'home' %}" class="btn pill-btn pill-btn-primary text-decoration-none px-4">Explore Products</a>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}
